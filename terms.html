@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Terms of Service — NameTune</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     :root { --bg: #0D0D1A; --text: #EAEAF0; --text2: #9393A8; --primary: #7B4FE0; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; }
     nav {
-      padding: 16px 24px; display: flex; align-items: center; gap: 10px;
+      padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     nav a { text-decoration: none; display: flex; align-items: center; gap: 10px; }
@@ -21,6 +21,32 @@
       display: flex; align-items: center; justify-content: center; font-size: 18px;
     }
     .logo-text { font-size: 18px; font-weight: 800; color: var(--text); }
+    .lang-select { position: relative; }
+    .lang-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s; padding: 0;
+    }
+    .lang-btn:hover { border-color: rgba(123,79,224,0.4); background: rgba(123,79,224,0.1); }
+    .lang-btn.open { border-color: var(--primary); }
+    .lang-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; min-width: 170px;
+      background: var(--bg); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: all 0.2s; z-index: 200;
+    }
+    .lang-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    .lang-option {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text2);
+      transition: all 0.2s; border: none; background: none; width: 100%; font-family: inherit;
+    }
+    .lang-option:hover { background: rgba(123,79,224,0.1); color: var(--text); }
+    .lang-option.active { color: #9B7AEA; background: rgba(123,79,224,0.08); }
+    .flag-img { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; }
+    .lang-btn .flag-img { width: 22px; height: 16px; border-radius: 2px; }
     .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
     h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
     .date { font-size: 13px; color: var(--text2); margin-bottom: 40px; }
@@ -29,6 +55,9 @@
     ul { padding-left: 20px; }
     a { color: var(--primary); }
     footer { padding: 24px; text-align: center; font-size: 12px; color: rgba(147,147,168,0.5); border-top: 1px solid rgba(255,255,255,0.06); }
+    [dir="rtl"] .container { direction: rtl; text-align: right; }
+    [dir="rtl"] ul { padding-left: 0; padding-right: 20px; }
+    [dir="rtl"] .lang-dropdown { right: auto; left: 0; }
   </style>
 </head>
 <body>
@@ -37,74 +66,584 @@
       <div class="logo-icon">🎵</div>
       <span class="logo-text">NameTune</span>
     </a>
+    <div class="lang-select">
+      <button class="lang-btn" id="langBtn">
+        <img id="langFlag" src="https://flagcdn.com/w40/gb.png" alt="" class="flag-img">
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-option active" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="flag-img"> English</button>
+        <button class="lang-option" data-lang="az"><img src="https://flagcdn.com/w40/az.png" class="flag-img"> Azərbaycan</button>
+        <button class="lang-option" data-lang="tr"><img src="https://flagcdn.com/w40/tr.png" class="flag-img"> Türkçe</button>
+        <button class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="flag-img"> Русский</button>
+        <button class="lang-option" data-lang="de"><img src="https://flagcdn.com/w40/de.png" class="flag-img"> Deutsch</button>
+        <button class="lang-option" data-lang="es"><img src="https://flagcdn.com/w40/es.png" class="flag-img"> Español</button>
+        <button class="lang-option" data-lang="fr"><img src="https://flagcdn.com/w40/fr.png" class="flag-img"> Français</button>
+        <button class="lang-option" data-lang="ar"><img src="https://flagcdn.com/w40/sa.png" class="flag-img"> العربية</button>
+      </div>
+    </div>
   </nav>
 
-  <div class="container">
-    <h1>Terms of Service</h1>
-    <p class="date">Last updated: April 16, 2026</p>
+  <div class="container" id="content"></div>
 
-    <p>Welcome to NameTune. By using our mobile application and services, you agree to be bound by these Terms of Service. Please read them carefully.</p>
+  <footer id="footer">&copy; 2026 NameTune. All rights reserved.</footer>
 
-    <h2>1. Acceptance of Terms</h2>
-    <p>By creating an account or using NameTune, you agree to these Terms of Service and our <a href="/privacy.html">Privacy Policy</a>. If you do not agree, please do not use the app.</p>
+<script>
+const T = {
+en: {
+  title: 'Terms of Service',
+  date: 'Last updated: April 16, 2026',
+  footer: '&copy; 2026 NameTune. All rights reserved.',
+  content: `
+<p>Welcome to NameTune. By using our mobile application and services, you agree to be bound by these Terms of Service. Please read them carefully.</p>
 
-    <h2>2. Description of Service</h2>
-    <p>NameTune is an AI-powered platform that allows users to create personalized audio content, including songs, lullabies, motivational audio, text-to-speech conversions, and more. The service uses artificial intelligence to generate lyrics and music based on user inputs.</p>
+<h2>1. Acceptance of Terms</h2>
+<p>By creating an account or using NameTune, you agree to these Terms of Service and our <a href="/privacy.html">Privacy Policy</a>. If you do not agree, please do not use the app.</p>
 
-    <h2>3. Account & Authentication</h2>
-    <p>You must sign in using a Google, Facebook, or Microsoft account. You are responsible for maintaining the security of your account. You must provide accurate information during registration.</p>
+<h2>2. Description of Service</h2>
+<p>NameTune is an AI-powered platform that allows users to create personalized audio content, including songs, lullabies, motivational audio, text-to-speech conversions, and more. The service uses artificial intelligence to generate lyrics and music based on user inputs.</p>
 
-    <h2>4. Credits & Payments</h2>
-    <ul>
-      <li>NameTune uses a credit-based system for audio generation</li>
-      <li>Free accounts receive a limited number of credits</li>
-      <li>Additional credits can be purchased through subscription plans or credit packs</li>
-      <li>Credits are non-transferable and non-refundable unless required by law</li>
-      <li>Purchased credit packs have an expiration date as indicated at the time of purchase</li>
-      <li>Subscription credits reset each billing cycle and do not roll over</li>
-    </ul>
+<h2>3. Account & Authentication</h2>
+<p>You must sign in using a Google, Facebook, or Microsoft account. You are responsible for maintaining the security of your account. You must provide accurate information during registration.</p>
 
-    <h2>5. Content Ownership</h2>
-    <p><strong>Your Content:</strong> You retain ownership of the creative inputs you provide (names, descriptions, preferences). The AI-generated audio content (lyrics, music) created through NameTune is licensed to you for personal, non-commercial use.</p>
-    <p><strong>Commercial Use:</strong> If you wish to use generated content commercially, please contact us for a commercial license.</p>
-    <p><strong>Explore Section:</strong> Content you publish to the Explore section becomes publicly visible. You grant NameTune a non-exclusive license to display this content within the app.</p>
+<h2>4. Credits & Payments</h2>
+<ul>
+  <li>NameTune uses a credit-based system for audio generation</li>
+  <li>Free accounts receive a limited number of credits</li>
+  <li>Additional credits can be purchased through subscription plans or credit packs</li>
+  <li>Credits are non-transferable and non-refundable unless required by law</li>
+  <li>Purchased credit packs have an expiration date as indicated at the time of purchase</li>
+  <li>Subscription credits reset each billing cycle and do not roll over</li>
+</ul>
 
-    <h2>6. Prohibited Content & Use</h2>
-    <p>You agree NOT to use NameTune to:</p>
-    <ul>
-      <li>Create content that deifies, worships, or makes divine comparisons to any person</li>
-      <li>Generate hateful, discriminatory, or threatening content</li>
-      <li>Create content that infringes on intellectual property rights of others</li>
-      <li>Impersonate other individuals or misrepresent your identity</li>
-      <li>Attempt to reverse-engineer, hack, or disrupt the service</li>
-      <li>Use the service for spam, fraud, or any illegal purpose</li>
-      <li>Circumvent rate limits or abuse the generation system</li>
-    </ul>
-    <p>We reserve the right to remove content and suspend accounts that violate these guidelines.</p>
+<h2>5. Content Ownership</h2>
+<p><strong>Your Content:</strong> You retain ownership of the creative inputs you provide (names, descriptions, preferences). The AI-generated audio content (lyrics, music) created through NameTune is licensed to you for personal, non-commercial use.</p>
+<p><strong>Commercial Use:</strong> If you wish to use generated content commercially, please contact us for a commercial license.</p>
+<p><strong>Explore Section:</strong> Content you publish to the Explore section becomes publicly visible. You grant NameTune a non-exclusive license to display this content within the app.</p>
 
-    <h2>7. AI-Generated Content Disclaimer</h2>
-    <p>Content generated by NameTune is created by artificial intelligence. While we implement content moderation filters, we cannot guarantee that all generated content will be free from errors, inaccuracies, or potentially inappropriate material. Users should review generated content before sharing.</p>
+<h2>6. Prohibited Content & Use</h2>
+<p>You agree NOT to use NameTune to:</p>
+<ul>
+  <li>Create content that deifies, worships, or makes divine comparisons to any person</li>
+  <li>Generate hateful, discriminatory, or threatening content</li>
+  <li>Create content that infringes on intellectual property rights of others</li>
+  <li>Impersonate other individuals or misrepresent your identity</li>
+  <li>Attempt to reverse-engineer, hack, or disrupt the service</li>
+  <li>Use the service for spam, fraud, or any illegal purpose</li>
+  <li>Circumvent rate limits or abuse the generation system</li>
+</ul>
+<p>We reserve the right to remove content and suspend accounts that violate these guidelines.</p>
 
-    <h2>8. Service Availability</h2>
-    <p>We strive to maintain high availability but do not guarantee uninterrupted service. We may temporarily suspend the service for maintenance, updates, or due to circumstances beyond our control. We are not liable for any losses resulting from service interruptions.</p>
+<h2>7. AI-Generated Content Disclaimer</h2>
+<p>Content generated by NameTune is created by artificial intelligence. While we implement content moderation filters, we cannot guarantee that all generated content will be free from errors, inaccuracies, or potentially inappropriate material. Users should review generated content before sharing.</p>
 
-    <h2>9. Limitation of Liability</h2>
-    <p>NameTune is provided "as is" without warranties of any kind. To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the service.</p>
+<h2>8. Service Availability</h2>
+<p>We strive to maintain high availability but do not guarantee uninterrupted service. We may temporarily suspend the service for maintenance, updates, or due to circumstances beyond our control. We are not liable for any losses resulting from service interruptions.</p>
 
-    <h2>10. Termination</h2>
-    <p>You may delete your account at any time by contacting <a href="mailto:support@nametune.com">support@nametune.com</a>. We may suspend or terminate your account if you violate these Terms. Upon termination, your right to use the service ceases, though we may retain certain data as required by law.</p>
+<h2>9. Limitation of Liability</h2>
+<p>NameTune is provided "as is" without warranties of any kind. To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the service.</p>
 
-    <h2>11. Changes to Terms</h2>
-    <p>We may update these Terms from time to time. Significant changes will be communicated through the app or via email. Continued use after changes constitutes acceptance.</p>
+<h2>10. Termination</h2>
+<p>You may delete your account at any time by contacting <a href="mailto:support@nametune.com">support@nametune.com</a>. We may suspend or terminate your account if you violate these Terms. Upon termination, your right to use the service ceases, though we may retain certain data as required by law.</p>
 
-    <h2>12. Governing Law</h2>
-    <p>These Terms are governed by the laws of the Republic of Azerbaijan. Any disputes shall be resolved in the courts of Baku, Azerbaijan.</p>
+<h2>11. Changes to Terms</h2>
+<p>We may update these Terms from time to time. Significant changes will be communicated through the app or via email. Continued use after changes constitutes acceptance.</p>
 
-    <h2>13. Contact</h2>
-    <p>For questions about these Terms, contact us:</p>
-    <p>Email: <a href="mailto:support@nametune.com">support@nametune.com</a></p>
-  </div>
+<h2>12. Governing Law</h2>
+<p>These Terms are governed by the laws of the Republic of Azerbaijan. Any disputes shall be resolved in the courts of Baku, Azerbaijan.</p>
 
-  <footer>&copy; 2026 NameTune. All rights reserved.</footer>
+<h2>13. Contact</h2>
+<p>For questions about these Terms, contact us:</p>
+<p>Email: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+az: {
+  title: 'İstifadə Şərtləri',
+  date: 'Son yenilənmə: 16 Aprel 2026',
+  footer: '&copy; 2026 NameTune. Bütün hüquqlar qorunur.',
+  content: `
+<p>NameTune-a xoş gəlmisiniz. Mobil tətbiqimizi və xidmətlərimizi istifadə etməklə bu İstifadə Şərtləri ilə bağlı olmağı qəbul edirsiniz. Zəhmət olmasa diqqətlə oxuyun.</p>
+
+<h2>1. Şərtlərin Qəbulu</h2>
+<p>Hesab yaratmaqla və ya NameTune-dan istifadə etməklə bu İstifadə Şərtlərini və <a href="/privacy.html">Məxfilik Siyasətimizi</a> qəbul edirsiniz. Razı deyilsinizsə, tətbiqdən istifadə etməyin.</p>
+
+<h2>2. Xidmətin Təsviri</h2>
+<p>NameTune istifadəçilərə fərdi audio məzmun yaratmağa imkan verən AI əsaslı platformadır — mahnılar, laylalar, motivasiya audioları, mətndən-səsə çevirmələr və s. Xidmət istifadəçi girişləri əsasında mahnı sözləri və musiqi yaratmaq üçün süni intellektdən istifadə edir.</p>
+
+<h2>3. Hesab və Autentifikasiya</h2>
+<p>Google, Facebook və ya Microsoft hesabı ilə daxil olmalısınız. Hesabınızın təhlükəsizliyini qorumaq sizin məsuliyyətinizdir. Qeydiyyat zamanı dəqiq məlumat verməlisiniz.</p>
+
+<h2>4. Kreditlər və Ödənişlər</h2>
+<ul>
+  <li>NameTune audio yaradılması üçün kredit əsaslı sistem istifadə edir</li>
+  <li>Pulsuz hesablar məhdud sayda kredit alır</li>
+  <li>Əlavə kreditlər abunəlik planları və ya kredit paketləri vasitəsilə satın alına bilər</li>
+  <li>Kreditlər köçürülə bilməz və qanunla tələb olunmadıqca geri qaytarılmır</li>
+  <li>Satın alınmış kredit paketlərinin satınalma zamanı göstərilən bitmə tarixi var</li>
+  <li>Abunəlik kreditləri hər hesablama dövrü sıfırlanır və növbəti dövrə keçmir</li>
+</ul>
+
+<h2>5. Məzmun Mülkiyyəti</h2>
+<p><strong>Sizin Məzmununuz:</strong> Təqdim etdiyiniz yaradıcı girişlərin (adlar, təsvirlər, üstünlüklər) mülkiyyəti sizdə qalır. NameTune vasitəsilə yaradılmış AI tərəfindən yaradılmış audio məzmun (mahnı sözləri, musiqi) şəxsi, qeyri-kommersiya istifadəsi üçün sizə lisenziyalanır.</p>
+<p><strong>Kommersiya İstifadəsi:</strong> Yaradılmış məzmunu kommersiya məqsədilə istifadə etmək istəyirsinizsə, kommersiya lisenziyası üçün bizimlə əlaqə saxlayın.</p>
+<p><strong>Kəşfet Bölməsi:</strong> Kəşfet bölməsində yayımladığınız məzmun ictimaiyyətə görünür olur. NameTune-a bu məzmunu tətbiq daxilində göstərmək üçün qeyri-eksklüziv lisenziya verirsiniz.</p>
+
+<h2>6. Qadağan Edilmiş Məzmun və İstifadə</h2>
+<p>NameTune-dan aşağıdakılar üçün istifadə etməməyə razılaşırsınız:</p>
+<ul>
+  <li>Hər hansı bir şəxsi ilahiləşdirən, ona sitayiş edən və ya ilahi müqayisə edən məzmun yaratmaq</li>
+  <li>Nifrət dolu, ayrı-seçkilik edən və ya təhdidedici məzmun yaratmaq</li>
+  <li>Başqalarının əqli mülkiyyət hüquqlarını pozan məzmun yaratmaq</li>
+  <li>Başqa şəxsləri təqlid etmək və ya kimliyinizi yanlış təqdim etmək</li>
+  <li>Xidməti geri mühəndislik etməyə, sındırmağa və ya pozmağa cəhd etmək</li>
+  <li>Xidmətdən spam, fırıldaqçılıq və ya hər hansı qeyri-qanuni məqsəd üçün istifadə etmək</li>
+  <li>Sürət limitlərini aşmaq və ya yaradılma sistemindən sui-istifadə etmək</li>
+</ul>
+<p>Bu qaydalara zidd hərəkət edən hesabları dayandırmaq və məzmunu silmək hüququmuzu özümüzdə saxlayırıq.</p>
+
+<h2>7. AI Tərəfindən Yaradılmış Məzmun İmtinası</h2>
+<p>NameTune tərəfindən yaradılmış məzmun süni intellekt tərəfindən yaradılır. Məzmun moderasiya filtrləri tətbiq etsək də, bütün yaradılmış məzmunun xətalardan, qeyri-dəqiqliklərdən və ya potensial uyğunsuz materialdan azad olacağına zəmanət verə bilmərik. İstifadəçilər paylaşmazdan əvvəl yaradılmış məzmunu nəzərdən keçirməlidirlər.</p>
+
+<h2>8. Xidmətin Mövcudluğu</h2>
+<p>Yüksək mövcudluğu qorumağa çalışırıq, lakin fasiləsiz xidmətə zəmanət vermirik. Texniki xidmət, yeniləmələr və ya nəzarətimizdən kənar hallar üçün xidməti müvəqqəti dayandıra bilərik. Xidmət fasilələrindən yaranan itkilərə görə məsuliyyət daşımırıq.</p>
+
+<h2>9. Məsuliyyətin Məhdudlaşdırılması</h2>
+<p>NameTune heç bir zəmanət olmadan "olduğu kimi" təqdim olunur. Qanunla icazə verilən maksimum dərəcədə, xidmətdən istifadəniz nəticəsində yaranan hər hansı dolayı, təsadüfi, xüsusi və ya nəticə zərərlərinə görə məsuliyyət daşımırıq.</p>
+
+<h2>10. Xitam</h2>
+<p>Hesabınızı istənilən vaxt <a href="mailto:support@nametune.com">support@nametune.com</a> ünvanına müraciət edərək silə bilərsiniz. Bu Şərtləri pozarsanız, hesabınızı dayandıra və ya ləğv edə bilərik. Xitam zamanı xidmətdən istifadə hüququnuz dayandırılır, lakin qanunla tələb olunduğu şəkildə müəyyən məlumatları saxlaya bilərik.</p>
+
+<h2>11. Şərtlərdə Dəyişikliklər</h2>
+<p>Bu Şərtləri vaxtaşırı yeniləyə bilərik. Əhəmiyyətli dəyişikliklər tətbiq və ya e-poçt vasitəsilə bildirilcək. Dəyişikliklərdən sonra istifadəyə davam etmək qəbul deməkdir.</p>
+
+<h2>12. Tətbiq Olunan Qanun</h2>
+<p>Bu Şərtlər Azərbaycan Respublikasının qanunları ilə tənzimlənir. İstənilən mübahisə Bakı, Azərbaycan məhkəmələrində həll ediləcək.</p>
+
+<h2>13. Əlaqə</h2>
+<p>Bu Şərtlər haqqında suallarınız üçün bizimlə əlaqə saxlayın:</p>
+<p>E-poçt: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+tr: {
+  title: 'Kullanım Koşulları',
+  date: 'Son güncelleme: 16 Nisan 2026',
+  footer: '&copy; 2026 NameTune. Tüm hakları saklıdır.',
+  content: `
+<p>NameTune'a hoş geldiniz. Mobil uygulamamızı ve hizmetlerimizi kullanarak bu Kullanım Koşullarına bağlı olmayı kabul edersiniz. Lütfen dikkatlice okuyun.</p>
+
+<h2>1. Koşulların Kabulü</h2>
+<p>Hesap oluşturarak veya NameTune'u kullanarak bu Kullanım Koşullarını ve <a href="/privacy.html">Gizlilik Politikamızı</a> kabul edersiniz. Kabul etmiyorsanız, uygulamayı kullanmayın.</p>
+
+<h2>2. Hizmet Açıklaması</h2>
+<p>NameTune, kullanıcıların şarkılar, ninniler, motivasyon sesleri, metinden sese dönüştürmeler ve daha fazlasını içeren kişiselleştirilmiş ses içeriği oluşturmasına olanak tanıyan yapay zeka destekli bir platformdur.</p>
+
+<h2>3. Hesap ve Kimlik Doğrulama</h2>
+<p>Google, Facebook veya Microsoft hesabıyla giriş yapmalısınız. Hesabınızın güvenliğini korumak sizin sorumluluğunuzdadır. Kayıt sırasında doğru bilgi sağlamalısınız.</p>
+
+<h2>4. Krediler ve Ödemeler</h2>
+<ul>
+  <li>NameTune, ses oluşturma için kredi tabanlı bir sistem kullanır</li>
+  <li>Ücretsiz hesaplar sınırlı sayıda kredi alır</li>
+  <li>Ek krediler abonelik planları veya kredi paketleri aracılığıyla satın alınabilir</li>
+  <li>Krediler devredilemez ve yasal olarak gerekmedikçe iade edilmez</li>
+  <li>Satın alınan kredi paketlerinin satın alma sırasında belirtilen son kullanma tarihi vardır</li>
+  <li>Abonelik kredileri her fatura döneminde sıfırlanır ve devredilmez</li>
+</ul>
+
+<h2>5. İçerik Mülkiyeti</h2>
+<p><strong>İçeriğiniz:</strong> Sağladığınız yaratıcı girdilerin (isimler, açıklamalar, tercihler) mülkiyeti sizde kalır. NameTune aracılığıyla oluşturulan yapay zeka tarafından üretilen ses içeriği kişisel, ticari olmayan kullanım için size lisanslanır.</p>
+<p><strong>Ticari Kullanım:</strong> Oluşturulan içeriği ticari olarak kullanmak istiyorsanız, ticari lisans için bizimle iletişime geçin.</p>
+<p><strong>Keşfet Bölümü:</strong> Keşfet bölümünde yayınladığınız içerik herkese açık hale gelir. NameTune'a bu içeriği uygulama içinde görüntülemek için münhasır olmayan bir lisans verirsiniz.</p>
+
+<h2>6. Yasaklanan İçerik ve Kullanım</h2>
+<p>NameTune'u aşağıdakiler için KULLANMAMAYA kabul edersiniz:</p>
+<ul>
+  <li>Herhangi bir kişiyi tanrılaştıran, ona tapan veya ilahi karşılaştırmalar yapan içerik oluşturmak</li>
+  <li>Nefret dolu, ayrımcı veya tehdit edici içerik oluşturmak</li>
+  <li>Başkalarının fikri mülkiyet haklarını ihlal eden içerik oluşturmak</li>
+  <li>Başka kişileri taklit etmek veya kimliğinizi yanlış temsil etmek</li>
+  <li>Hizmeti tersine mühendislik yapmaya, hacklemeye veya bozmaya çalışmak</li>
+  <li>Hizmeti spam, dolandırıcılık veya herhangi bir yasadışı amaç için kullanmak</li>
+  <li>Hız sınırlarını aşmak veya oluşturma sistemini kötüye kullanmak</li>
+</ul>
+<p>Bu yönergeleri ihlal eden hesapları askıya alma ve içeriği kaldırma hakkını saklı tutarız.</p>
+
+<h2>7. Yapay Zeka Tarafından Oluşturulan İçerik Feragati</h2>
+<p>NameTune tarafından oluşturulan içerik yapay zeka tarafından üretilir. İçerik moderasyon filtreleri uygulasak da, tüm üretilen içeriğin hatalardan, yanlışlıklardan veya potansiyel olarak uygunsuz materyallerden arınmış olacağını garanti edemeyiz.</p>
+
+<h2>8. Hizmet Kullanılabilirliği</h2>
+<p>Yüksek kullanılabilirliği sürdürmeye çalışıyoruz ancak kesintisiz hizmet garanti etmiyoruz. Bakım, güncellemeler veya kontrolümüz dışındaki nedenlerle hizmeti geçici olarak askıya alabiliriz.</p>
+
+<h2>9. Sorumluluk Sınırlaması</h2>
+<p>NameTune herhangi bir garanti olmaksızın "olduğu gibi" sağlanır. Yasaların izin verdiği azami ölçüde, hizmeti kullanımınızdan kaynaklanan dolaylı, arızi, özel veya sonuç niteliğinde zararlardan sorumlu olmayacağız.</p>
+
+<h2>10. Fesih</h2>
+<p>Hesabınızı istediğiniz zaman <a href="mailto:support@nametune.com">support@nametune.com</a> adresine başvurarak silebilirsiniz. Bu Koşulları ihlal ederseniz hesabınızı askıya alabilir veya feshedebiliriz.</p>
+
+<h2>11. Koşullardaki Değişiklikler</h2>
+<p>Bu Koşulları zaman zaman güncelleyebiliriz. Önemli değişiklikler uygulama veya e-posta yoluyla bildirilecektir. Değişikliklerden sonra kullanıma devam etmek kabul anlamına gelir.</p>
+
+<h2>12. Geçerli Hukuk</h2>
+<p>Bu Koşullar Azerbaycan Cumhuriyeti yasalarına tabidir. Tüm anlaşmazlıklar Bakü, Azerbaycan mahkemelerinde çözülecektir.</p>
+
+<h2>13. İletişim</h2>
+<p>Bu Koşullar hakkında sorularınız için bizimle iletişime geçin:</p>
+<p>E-posta: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+ru: {
+  title: 'Условия использования',
+  date: 'Последнее обновление: 16 апреля 2026 г.',
+  footer: '&copy; 2026 NameTune. Все права защищены.',
+  content: `
+<p>Добро пожаловать в NameTune. Используя наше мобильное приложение и сервисы, вы соглашаетесь с настоящими Условиями использования. Пожалуйста, внимательно прочитайте их.</p>
+
+<h2>1. Принятие условий</h2>
+<p>Создавая аккаунт или используя NameTune, вы соглашаетесь с настоящими Условиями использования и нашей <a href="/privacy.html">Политикой конфиденциальности</a>. Если вы не согласны, пожалуйста, не используйте приложение.</p>
+
+<h2>2. Описание сервиса</h2>
+<p>NameTune — это платформа на основе ИИ, которая позволяет пользователям создавать персонализированный аудиоконтент, включая песни, колыбельные, мотивационное аудио, преобразование текста в речь и многое другое.</p>
+
+<h2>3. Аккаунт и аутентификация</h2>
+<p>Вы должны войти с помощью аккаунта Google, Facebook или Microsoft. Вы несёте ответственность за безопасность своего аккаунта. При регистрации необходимо предоставить точную информацию.</p>
+
+<h2>4. Кредиты и платежи</h2>
+<ul>
+  <li>NameTune использует кредитную систему для генерации аудио</li>
+  <li>Бесплатные аккаунты получают ограниченное количество кредитов</li>
+  <li>Дополнительные кредиты можно приобрести через подписки или пакеты кредитов</li>
+  <li>Кредиты не подлежат передаче и возврату, если иное не требуется законом</li>
+  <li>Приобретённые пакеты кредитов имеют срок действия, указанный при покупке</li>
+  <li>Кредиты подписки обновляются каждый расчётный период и не переносятся</li>
+</ul>
+
+<h2>5. Права на контент</h2>
+<p><strong>Ваш контент:</strong> Вы сохраняете право собственности на предоставленные вами творческие данные (имена, описания, предпочтения). Аудиоконтент, созданный ИИ через NameTune, лицензируется вам для личного, некоммерческого использования.</p>
+<p><strong>Коммерческое использование:</strong> Если вы хотите использовать созданный контент в коммерческих целях, свяжитесь с нами для получения коммерческой лицензии.</p>
+<p><strong>Раздел «Обзор»:</strong> Контент, опубликованный в разделе «Обзор», становится общедоступным. Вы предоставляете NameTune неисключительную лицензию на отображение этого контента в приложении.</p>
+
+<h2>6. Запрещённый контент и использование</h2>
+<p>Вы соглашаетесь НЕ использовать NameTune для:</p>
+<ul>
+  <li>Создания контента, обожествляющего или делающего божественные сравнения с любым человеком</li>
+  <li>Генерации ненавистнического, дискриминационного или угрожающего контента</li>
+  <li>Создания контента, нарушающего права интеллектуальной собственности других лиц</li>
+  <li>Выдачи себя за других лиц или искажения своей личности</li>
+  <li>Попыток обратной разработки, взлома или нарушения работы сервиса</li>
+  <li>Использования сервиса для спама, мошенничества или любых незаконных целей</li>
+  <li>Обхода ограничений скорости или злоупотребления системой генерации</li>
+</ul>
+<p>Мы оставляем за собой право удалять контент и блокировать аккаунты, нарушающие эти правила.</p>
+
+<h2>7. Отказ от ответственности за контент ИИ</h2>
+<p>Контент, созданный NameTune, генерируется искусственным интеллектом. Несмотря на фильтры модерации, мы не можем гарантировать отсутствие ошибок, неточностей или потенциально неприемлемого материала. Пользователям следует проверять контент перед публикацией.</p>
+
+<h2>8. Доступность сервиса</h2>
+<p>Мы стремимся поддерживать высокую доступность, но не гарантируем бесперебойную работу. Мы можем временно приостановить сервис для обслуживания, обновлений или по не зависящим от нас обстоятельствам.</p>
+
+<h2>9. Ограничение ответственности</h2>
+<p>NameTune предоставляется «как есть» без каких-либо гарантий. В максимальной степени, разрешённой законом, мы не несём ответственности за любые косвенные, случайные, специальные или последующие убытки.</p>
+
+<h2>10. Прекращение</h2>
+<p>Вы можете удалить свой аккаунт в любое время, обратившись по адресу <a href="mailto:support@nametune.com">support@nametune.com</a>. Мы можем приостановить или удалить ваш аккаунт при нарушении этих Условий.</p>
+
+<h2>11. Изменения условий</h2>
+<p>Мы можем обновлять эти Условия время от времени. О существенных изменениях мы сообщим через приложение или по электронной почте. Продолжение использования после изменений означает принятие.</p>
+
+<h2>12. Применимое право</h2>
+<p>Настоящие Условия регулируются законодательством Азербайджанской Республики. Все споры подлежат разрешению в судах города Баку, Азербайджан.</p>
+
+<h2>13. Контакты</h2>
+<p>По вопросам об этих Условиях свяжитесь с нами:</p>
+<p>Email: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+de: {
+  title: 'Nutzungsbedingungen',
+  date: 'Zuletzt aktualisiert: 16. April 2026',
+  footer: '&copy; 2026 NameTune. Alle Rechte vorbehalten.',
+  content: `
+<p>Willkommen bei NameTune. Durch die Nutzung unserer mobilen Anwendung und Dienste stimmen Sie diesen Nutzungsbedingungen zu. Bitte lesen Sie sie sorgfältig durch.</p>
+
+<h2>1. Annahme der Bedingungen</h2>
+<p>Durch das Erstellen eines Kontos oder die Nutzung von NameTune stimmen Sie diesen Nutzungsbedingungen und unserer <a href="/privacy.html">Datenschutzrichtlinie</a> zu. Wenn Sie nicht einverstanden sind, nutzen Sie die App bitte nicht.</p>
+
+<h2>2. Beschreibung des Dienstes</h2>
+<p>NameTune ist eine KI-gestützte Plattform, die es Benutzern ermöglicht, personalisierte Audioinhalte zu erstellen, darunter Songs, Schlaflieder, Motivationsaudio, Text-zu-Sprache-Konvertierungen und mehr.</p>
+
+<h2>3. Konto und Authentifizierung</h2>
+<p>Sie müssen sich mit einem Google-, Facebook- oder Microsoft-Konto anmelden. Sie sind für die Sicherheit Ihres Kontos verantwortlich. Sie müssen bei der Registrierung korrekte Angaben machen.</p>
+
+<h2>4. Credits und Zahlungen</h2>
+<ul>
+  <li>NameTune verwendet ein kreditbasiertes System für die Audiogenerierung</li>
+  <li>Kostenlose Konten erhalten eine begrenzte Anzahl von Credits</li>
+  <li>Zusätzliche Credits können über Abonnements oder Credit-Pakete erworben werden</li>
+  <li>Credits sind nicht übertragbar und nicht erstattungsfähig, sofern gesetzlich nicht anders vorgeschrieben</li>
+  <li>Gekaufte Credit-Pakete haben ein Ablaufdatum, das beim Kauf angegeben wird</li>
+  <li>Abonnement-Credits werden in jedem Abrechnungszeitraum zurückgesetzt und nicht übertragen</li>
+</ul>
+
+<h2>5. Eigentum an Inhalten</h2>
+<p><strong>Ihre Inhalte:</strong> Sie behalten das Eigentum an Ihren kreativen Eingaben (Namen, Beschreibungen, Präferenzen). Die von KI generierten Audioinhalte werden Ihnen für den persönlichen, nicht-kommerziellen Gebrauch lizenziert.</p>
+<p><strong>Kommerzielle Nutzung:</strong> Wenn Sie generierte Inhalte kommerziell nutzen möchten, kontaktieren Sie uns für eine kommerzielle Lizenz.</p>
+<p><strong>Entdecken-Bereich:</strong> Im Entdecken-Bereich veröffentlichte Inhalte werden öffentlich sichtbar. Sie gewähren NameTune eine nicht-exklusive Lizenz zur Anzeige dieser Inhalte in der App.</p>
+
+<h2>6. Verbotene Inhalte und Nutzung</h2>
+<p>Sie stimmen zu, NameTune NICHT zu verwenden für:</p>
+<ul>
+  <li>Erstellung von Inhalten, die eine Person vergöttlichen oder göttliche Vergleiche anstellen</li>
+  <li>Generierung hasserfüllter, diskriminierender oder bedrohlicher Inhalte</li>
+  <li>Erstellung von Inhalten, die geistige Eigentumsrechte anderer verletzen</li>
+  <li>Nachahmung anderer Personen oder Falschdarstellung Ihrer Identität</li>
+  <li>Reverse Engineering, Hacken oder Stören des Dienstes</li>
+  <li>Nutzung des Dienstes für Spam, Betrug oder illegale Zwecke</li>
+  <li>Umgehung von Ratenlimits oder Missbrauch des Generierungssystems</li>
+</ul>
+<p>Wir behalten uns das Recht vor, Inhalte zu entfernen und Konten zu sperren, die gegen diese Richtlinien verstoßen.</p>
+
+<h2>7. Haftungsausschluss für KI-generierte Inhalte</h2>
+<p>Von NameTune generierte Inhalte werden von künstlicher Intelligenz erstellt. Trotz Moderationsfiltern können wir nicht garantieren, dass alle generierten Inhalte frei von Fehlern oder unangemessenem Material sind.</p>
+
+<h2>8. Verfügbarkeit des Dienstes</h2>
+<p>Wir bemühen uns um hohe Verfügbarkeit, garantieren aber keinen unterbrechungsfreien Dienst. Wir können den Dienst vorübergehend für Wartung, Updates oder aufgrund höherer Gewalt aussetzen.</p>
+
+<h2>9. Haftungsbeschränkung</h2>
+<p>NameTune wird ohne Gewährleistung „wie besehen" bereitgestellt. Im gesetzlich zulässigen Rahmen haften wir nicht für indirekte, zufällige, besondere oder Folgeschäden.</p>
+
+<h2>10. Kündigung</h2>
+<p>Sie können Ihr Konto jederzeit löschen, indem Sie uns unter <a href="mailto:support@nametune.com">support@nametune.com</a> kontaktieren. Bei Verstoß gegen diese Bedingungen können wir Ihr Konto sperren oder kündigen.</p>
+
+<h2>11. Änderungen der Bedingungen</h2>
+<p>Wir können diese Bedingungen von Zeit zu Zeit aktualisieren. Wesentliche Änderungen werden über die App oder per E-Mail mitgeteilt. Die fortgesetzte Nutzung nach Änderungen gilt als Annahme.</p>
+
+<h2>12. Geltendes Recht</h2>
+<p>Diese Bedingungen unterliegen dem Recht der Republik Aserbaidschan. Streitigkeiten werden vor den Gerichten in Baku, Aserbaidschan, beigelegt.</p>
+
+<h2>13. Kontakt</h2>
+<p>Bei Fragen zu diesen Bedingungen kontaktieren Sie uns:</p>
+<p>E-Mail: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+es: {
+  title: 'Términos de Servicio',
+  date: 'Última actualización: 16 de abril de 2026',
+  footer: '&copy; 2026 NameTune. Todos los derechos reservados.',
+  content: `
+<p>Bienvenido a NameTune. Al usar nuestra aplicación móvil y servicios, acepta estar sujeto a estos Términos de Servicio. Por favor, léalos cuidadosamente.</p>
+
+<h2>1. Aceptación de los Términos</h2>
+<p>Al crear una cuenta o usar NameTune, acepta estos Términos de Servicio y nuestra <a href="/privacy.html">Política de Privacidad</a>. Si no está de acuerdo, no use la aplicación.</p>
+
+<h2>2. Descripción del Servicio</h2>
+<p>NameTune es una plataforma impulsada por IA que permite a los usuarios crear contenido de audio personalizado, incluyendo canciones, canciones de cuna, audio motivacional, conversiones de texto a voz y más.</p>
+
+<h2>3. Cuenta y Autenticación</h2>
+<p>Debe iniciar sesión con una cuenta de Google, Facebook o Microsoft. Usted es responsable de mantener la seguridad de su cuenta. Debe proporcionar información precisa durante el registro.</p>
+
+<h2>4. Créditos y Pagos</h2>
+<ul>
+  <li>NameTune utiliza un sistema basado en créditos para la generación de audio</li>
+  <li>Las cuentas gratuitas reciben un número limitado de créditos</li>
+  <li>Se pueden comprar créditos adicionales a través de planes de suscripción o paquetes de créditos</li>
+  <li>Los créditos no son transferibles ni reembolsables a menos que la ley lo requiera</li>
+  <li>Los paquetes de créditos comprados tienen una fecha de vencimiento indicada en el momento de la compra</li>
+  <li>Los créditos de suscripción se restablecen en cada ciclo de facturación y no se acumulan</li>
+</ul>
+
+<h2>5. Propiedad del Contenido</h2>
+<p><strong>Su Contenido:</strong> Usted conserva la propiedad de las entradas creativas que proporciona. El contenido de audio generado por IA se le licencia para uso personal y no comercial.</p>
+<p><strong>Uso Comercial:</strong> Si desea usar el contenido generado comercialmente, contáctenos para obtener una licencia comercial.</p>
+<p><strong>Sección Explorar:</strong> El contenido que publique en la sección Explorar se hace públicamente visible. Usted otorga a NameTune una licencia no exclusiva para mostrar este contenido en la aplicación.</p>
+
+<h2>6. Contenido y Uso Prohibidos</h2>
+<p>Acepta NO usar NameTune para:</p>
+<ul>
+  <li>Crear contenido que deifique o haga comparaciones divinas con cualquier persona</li>
+  <li>Generar contenido de odio, discriminatorio o amenazante</li>
+  <li>Crear contenido que infrinja los derechos de propiedad intelectual de otros</li>
+  <li>Hacerse pasar por otras personas o tergiversar su identidad</li>
+  <li>Intentar ingeniería inversa, hackear o interrumpir el servicio</li>
+  <li>Usar el servicio para spam, fraude o cualquier propósito ilegal</li>
+  <li>Eludir límites de velocidad o abusar del sistema de generación</li>
+</ul>
+<p>Nos reservamos el derecho de eliminar contenido y suspender cuentas que violen estas directrices.</p>
+
+<h2>7. Descargo de Responsabilidad del Contenido IA</h2>
+<p>El contenido generado por NameTune es creado por inteligencia artificial. Aunque implementamos filtros de moderación, no podemos garantizar que todo el contenido esté libre de errores o material inapropiado.</p>
+
+<h2>8. Disponibilidad del Servicio</h2>
+<p>Nos esforzamos por mantener alta disponibilidad pero no garantizamos un servicio ininterrumpido. Podemos suspender temporalmente el servicio por mantenimiento, actualizaciones o circunstancias fuera de nuestro control.</p>
+
+<h2>9. Limitación de Responsabilidad</h2>
+<p>NameTune se proporciona "tal cual" sin garantías de ningún tipo. En la máxima medida permitida por la ley, no seremos responsables de daños indirectos, incidentales, especiales o consecuentes.</p>
+
+<h2>10. Terminación</h2>
+<p>Puede eliminar su cuenta en cualquier momento contactando a <a href="mailto:support@nametune.com">support@nametune.com</a>. Podemos suspender o terminar su cuenta si viola estos Términos.</p>
+
+<h2>11. Cambios en los Términos</h2>
+<p>Podemos actualizar estos Términos periódicamente. Los cambios significativos se comunicarán a través de la aplicación o por correo electrónico. El uso continuado después de los cambios constituye aceptación.</p>
+
+<h2>12. Ley Aplicable</h2>
+<p>Estos Términos se rigen por las leyes de la República de Azerbaiyán. Cualquier disputa se resolverá en los tribunales de Bakú, Azerbaiyán.</p>
+
+<h2>13. Contacto</h2>
+<p>Para preguntas sobre estos Términos, contáctenos:</p>
+<p>Correo: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+fr: {
+  title: 'Conditions d\'Utilisation',
+  date: 'Dernière mise à jour : 16 avril 2026',
+  footer: '&copy; 2026 NameTune. Tous droits réservés.',
+  content: `
+<p>Bienvenue sur NameTune. En utilisant notre application mobile et nos services, vous acceptez d'être lié par ces Conditions d'Utilisation. Veuillez les lire attentivement.</p>
+
+<h2>1. Acceptation des Conditions</h2>
+<p>En créant un compte ou en utilisant NameTune, vous acceptez ces Conditions d'Utilisation et notre <a href="/privacy.html">Politique de Confidentialité</a>. Si vous n'êtes pas d'accord, veuillez ne pas utiliser l'application.</p>
+
+<h2>2. Description du Service</h2>
+<p>NameTune est une plateforme alimentée par l'IA qui permet aux utilisateurs de créer du contenu audio personnalisé, y compris des chansons, berceuses, audio motivationnel, conversions texte-parole et plus encore.</p>
+
+<h2>3. Compte et Authentification</h2>
+<p>Vous devez vous connecter avec un compte Google, Facebook ou Microsoft. Vous êtes responsable de la sécurité de votre compte. Vous devez fournir des informations exactes lors de l'inscription.</p>
+
+<h2>4. Crédits et Paiements</h2>
+<ul>
+  <li>NameTune utilise un système basé sur des crédits pour la génération audio</li>
+  <li>Les comptes gratuits reçoivent un nombre limité de crédits</li>
+  <li>Des crédits supplémentaires peuvent être achetés via des abonnements ou des packs de crédits</li>
+  <li>Les crédits ne sont ni transférables ni remboursables sauf si la loi l'exige</li>
+  <li>Les packs de crédits achetés ont une date d'expiration indiquée au moment de l'achat</li>
+  <li>Les crédits d'abonnement sont réinitialisés à chaque cycle de facturation et ne sont pas reportés</li>
+</ul>
+
+<h2>5. Propriété du Contenu</h2>
+<p><strong>Votre Contenu :</strong> Vous conservez la propriété de vos entrées créatives. Le contenu audio généré par l'IA vous est licencié pour un usage personnel et non commercial.</p>
+<p><strong>Usage Commercial :</strong> Si vous souhaitez utiliser le contenu généré commercialement, contactez-nous pour une licence commerciale.</p>
+<p><strong>Section Explorer :</strong> Le contenu publié dans la section Explorer devient publiquement visible. Vous accordez à NameTune une licence non exclusive pour afficher ce contenu dans l'application.</p>
+
+<h2>6. Contenu et Utilisation Interdits</h2>
+<p>Vous acceptez de NE PAS utiliser NameTune pour :</p>
+<ul>
+  <li>Créer du contenu divinisant ou faisant des comparaisons divines avec toute personne</li>
+  <li>Générer du contenu haineux, discriminatoire ou menaçant</li>
+  <li>Créer du contenu portant atteinte aux droits de propriété intellectuelle d'autrui</li>
+  <li>Usurper l'identité d'autres personnes ou déformer votre identité</li>
+  <li>Tenter de rétro-ingénierie, de pirater ou de perturber le service</li>
+  <li>Utiliser le service pour du spam, de la fraude ou tout objectif illégal</li>
+  <li>Contourner les limites de débit ou abuser du système de génération</li>
+</ul>
+<p>Nous nous réservons le droit de supprimer le contenu et de suspendre les comptes qui violent ces directives.</p>
+
+<h2>7. Avertissement sur le Contenu Généré par l'IA</h2>
+<p>Le contenu généré par NameTune est créé par l'intelligence artificielle. Malgré nos filtres de modération, nous ne pouvons garantir que tout le contenu sera exempt d'erreurs ou de matériel potentiellement inapproprié.</p>
+
+<h2>8. Disponibilité du Service</h2>
+<p>Nous nous efforçons de maintenir une haute disponibilité mais ne garantissons pas un service ininterrompu. Nous pouvons temporairement suspendre le service pour maintenance, mises à jour ou circonstances indépendantes de notre volonté.</p>
+
+<h2>9. Limitation de Responsabilité</h2>
+<p>NameTune est fourni « tel quel » sans garantie d'aucune sorte. Dans la mesure maximale permise par la loi, nous ne serons pas responsables de tout dommage indirect, accessoire, spécial ou consécutif.</p>
+
+<h2>10. Résiliation</h2>
+<p>Vous pouvez supprimer votre compte à tout moment en contactant <a href="mailto:support@nametune.com">support@nametune.com</a>. Nous pouvons suspendre ou résilier votre compte en cas de violation de ces Conditions.</p>
+
+<h2>11. Modifications des Conditions</h2>
+<p>Nous pouvons mettre à jour ces Conditions de temps en temps. Les changements importants seront communiqués via l'application ou par e-mail. L'utilisation continue après les modifications constitue l'acceptation.</p>
+
+<h2>12. Droit Applicable</h2>
+<p>Ces Conditions sont régies par les lois de la République d'Azerbaïdjan. Tout litige sera résolu devant les tribunaux de Bakou, Azerbaïdjan.</p>
+
+<h2>13. Contact</h2>
+<p>Pour toute question sur ces Conditions, contactez-nous :</p>
+<p>E-mail : <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+ar: {
+  title: 'شروط الخدمة',
+  date: 'آخر تحديث: 16 أبريل 2026',
+  footer: '&copy; 2026 NameTune. جميع الحقوق محفوظة.',
+  content: `
+<p>مرحبًا بك في NameTune. باستخدام تطبيقنا للهاتف المحمول وخدماتنا، فإنك توافق على الالتزام بشروط الخدمة هذه. يرجى قراءتها بعناية.</p>
+
+<h2>1. قبول الشروط</h2>
+<p>بإنشاء حساب أو استخدام NameTune، فإنك توافق على شروط الخدمة هذه و<a href="/privacy.html">سياسة الخصوصية</a> الخاصة بنا. إذا لم توافق، يرجى عدم استخدام التطبيق.</p>
+
+<h2>2. وصف الخدمة</h2>
+<p>NameTune هي منصة مدعومة بالذكاء الاصطناعي تتيح للمستخدمين إنشاء محتوى صوتي مخصص، بما في ذلك الأغاني والتهويدات والصوت التحفيزي وتحويل النص إلى كلام والمزيد.</p>
+
+<h2>3. الحساب والمصادقة</h2>
+<p>يجب عليك تسجيل الدخول باستخدام حساب Google أو Facebook أو Microsoft. أنت مسؤول عن الحفاظ على أمان حسابك. يجب عليك تقديم معلومات دقيقة أثناء التسجيل.</p>
+
+<h2>4. الأرصدة والمدفوعات</h2>
+<ul>
+  <li>يستخدم NameTune نظامًا قائمًا على الأرصدة لإنشاء الصوت</li>
+  <li>تحصل الحسابات المجانية على عدد محدود من الأرصدة</li>
+  <li>يمكن شراء أرصدة إضافية من خلال خطط الاشتراك أو حزم الأرصدة</li>
+  <li>الأرصدة غير قابلة للتحويل وغير قابلة للاسترداد ما لم يتطلب القانون ذلك</li>
+  <li>حزم الأرصدة المشتراة لها تاريخ انتهاء صلاحية كما هو موضح وقت الشراء</li>
+  <li>يتم إعادة تعيين أرصدة الاشتراك في كل دورة فوترة ولا يتم ترحيلها</li>
+</ul>
+
+<h2>5. ملكية المحتوى</h2>
+<p><strong>محتواك:</strong> تحتفظ بملكية المدخلات الإبداعية التي تقدمها (الأسماء والأوصاف والتفضيلات). المحتوى الصوتي المُنشأ بالذكاء الاصطناعي مرخص لك للاستخدام الشخصي غير التجاري.</p>
+<p><strong>الاستخدام التجاري:</strong> إذا كنت ترغب في استخدام المحتوى المُنشأ تجاريًا، اتصل بنا للحصول على ترخيص تجاري.</p>
+<p><strong>قسم الاستكشاف:</strong> المحتوى الذي تنشره في قسم الاستكشاف يصبح مرئيًا للعامة. أنت تمنح NameTune ترخيصًا غير حصري لعرض هذا المحتوى داخل التطبيق.</p>
+
+<h2>6. المحتوى والاستخدام المحظور</h2>
+<p>توافق على عدم استخدام NameTune من أجل:</p>
+<ul>
+  <li>إنشاء محتوى يؤله أو يعبد أو يجري مقارنات إلهية مع أي شخص</li>
+  <li>إنشاء محتوى يحض على الكراهية أو التمييز أو التهديد</li>
+  <li>إنشاء محتوى ينتهك حقوق الملكية الفكرية للآخرين</li>
+  <li>انتحال شخصية أفراد آخرين أو تحريف هويتك</li>
+  <li>محاولة الهندسة العكسية أو اختراق أو تعطيل الخدمة</li>
+  <li>استخدام الخدمة للبريد العشوائي أو الاحتيال أو أي غرض غير قانوني</li>
+  <li>التحايل على حدود المعدل أو إساءة استخدام نظام الإنشاء</li>
+</ul>
+<p>نحتفظ بالحق في إزالة المحتوى وتعليق الحسابات التي تنتهك هذه الإرشادات.</p>
+
+<h2>7. إخلاء المسؤولية عن محتوى الذكاء الاصطناعي</h2>
+<p>المحتوى الذي ينشئه NameTune يتم إنشاؤه بواسطة الذكاء الاصطناعي. على الرغم من تطبيق فلاتر الإشراف على المحتوى، لا يمكننا ضمان أن جميع المحتوى المُنشأ سيكون خاليًا من الأخطاء أو المواد غير الملائمة.</p>
+
+<h2>8. توفر الخدمة</h2>
+<p>نسعى للحفاظ على توفر عالٍ لكننا لا نضمن خدمة دون انقطاع. قد نعلق الخدمة مؤقتًا للصيانة أو التحديثات أو لظروف خارجة عن سيطرتنا.</p>
+
+<h2>9. تحديد المسؤولية</h2>
+<p>يتم تقديم NameTune "كما هو" دون أي ضمانات. إلى أقصى حد يسمح به القانون، لن نكون مسؤولين عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية.</p>
+
+<h2>10. الإنهاء</h2>
+<p>يمكنك حذف حسابك في أي وقت عن طريق الاتصال بـ <a href="mailto:support@nametune.com">support@nametune.com</a>. قد نعلق أو ننهي حسابك إذا انتهكت هذه الشروط.</p>
+
+<h2>11. التغييرات في الشروط</h2>
+<p>قد نقوم بتحديث هذه الشروط من وقت لآخر. سيتم إبلاغ التغييرات المهمة عبر التطبيق أو البريد الإلكتروني. يعتبر الاستمرار في الاستخدام بعد التغييرات قبولاً.</p>
+
+<h2>12. القانون الحاكم</h2>
+<p>تخضع هذه الشروط لقوانين جمهورية أذربيجان. يتم حل أي نزاعات في محاكم باكو، أذربيجان.</p>
+
+<h2>13. الاتصال</h2>
+<p>للأسئلة حول هذه الشروط، اتصل بنا:</p>
+<p>البريد الإلكتروني: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+}
+};
+
+const FLAGS = {en:'gb',az:'az',tr:'tr',ru:'ru',de:'de',es:'es',fr:'fr',ar:'sa'};
+
+function setLang(lang) {
+  const t = T[lang] || T.en;
+  document.getElementById('content').innerHTML = '<h1>'+t.title+'</h1><p class="date">'+t.date+'</p>'+t.content;
+  document.getElementById('footer').innerHTML = t.footer;
+  document.getElementById('langFlag').src = 'https://flagcdn.com/w40/'+FLAGS[lang]+'.png';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = t.title + ' — NameTune';
+  document.querySelectorAll('.lang-option').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  localStorage.setItem('nt_lang', lang);
+}
+
+const langBtn = document.getElementById('langBtn');
+const langDrop = document.getElementById('langDropdown');
+langBtn.addEventListener('click', () => { langDrop.classList.toggle('show'); langBtn.classList.toggle('open'); });
+document.addEventListener('click', e => { if (!e.target.closest('.lang-select')) { langDrop.classList.remove('show'); langBtn.classList.remove('open'); } });
+document.querySelectorAll('.lang-option').forEach(b => b.addEventListener('click', () => {
+  setLang(b.dataset.lang);
+  langDrop.classList.remove('show'); langBtn.classList.remove('open');
+}));
+
+const saved = localStorage.getItem('nt_lang') || (navigator.language||'').slice(0,2);
+setLang(T[saved] ? saved : 'en');
+</script>
 </body>
 </html>

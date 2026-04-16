@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Privacy Policy — NameTune</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     :root { --bg: #0D0D1A; --text: #EAEAF0; --text2: #9393A8; --primary: #7B4FE0; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; }
     nav {
-      padding: 16px 24px; display: flex; align-items: center; gap: 10px;
+      padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     nav a { text-decoration: none; display: flex; align-items: center; gap: 10px; }
@@ -21,6 +21,32 @@
       display: flex; align-items: center; justify-content: center; font-size: 18px;
     }
     .logo-text { font-size: 18px; font-weight: 800; color: var(--text); }
+    .lang-select { position: relative; }
+    .lang-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s; padding: 0;
+    }
+    .lang-btn:hover { border-color: rgba(123,79,224,0.4); background: rgba(123,79,224,0.1); }
+    .lang-btn.open { border-color: var(--primary); }
+    .lang-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; min-width: 170px;
+      background: var(--bg); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: all 0.2s; z-index: 200;
+    }
+    .lang-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    .lang-option {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text2);
+      transition: all 0.2s; border: none; background: none; width: 100%; font-family: inherit;
+    }
+    .lang-option:hover { background: rgba(123,79,224,0.1); color: var(--text); }
+    .lang-option.active { color: #9B7AEA; background: rgba(123,79,224,0.08); }
+    .flag-img { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; }
+    .lang-btn .flag-img { width: 22px; height: 16px; border-radius: 2px; }
     .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
     h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
     .date { font-size: 13px; color: var(--text2); margin-bottom: 40px; }
@@ -29,6 +55,9 @@
     ul { padding-left: 20px; }
     a { color: var(--primary); }
     footer { padding: 24px; text-align: center; font-size: 12px; color: rgba(147,147,168,0.5); border-top: 1px solid rgba(255,255,255,0.06); }
+    [dir="rtl"] .container { direction: rtl; text-align: right; }
+    [dir="rtl"] ul { padding-left: 0; padding-right: 20px; }
+    [dir="rtl"] .lang-dropdown { right: auto; left: 0; }
   </style>
 </head>
 <body>
@@ -37,66 +66,520 @@
       <div class="logo-icon">🎵</div>
       <span class="logo-text">NameTune</span>
     </a>
+    <div class="lang-select">
+      <button class="lang-btn" id="langBtn">
+        <img id="langFlag" src="https://flagcdn.com/w40/gb.png" alt="" class="flag-img">
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-option active" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="flag-img"> English</button>
+        <button class="lang-option" data-lang="az"><img src="https://flagcdn.com/w40/az.png" class="flag-img"> Azərbaycan</button>
+        <button class="lang-option" data-lang="tr"><img src="https://flagcdn.com/w40/tr.png" class="flag-img"> Türkçe</button>
+        <button class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="flag-img"> Русский</button>
+        <button class="lang-option" data-lang="de"><img src="https://flagcdn.com/w40/de.png" class="flag-img"> Deutsch</button>
+        <button class="lang-option" data-lang="es"><img src="https://flagcdn.com/w40/es.png" class="flag-img"> Español</button>
+        <button class="lang-option" data-lang="fr"><img src="https://flagcdn.com/w40/fr.png" class="flag-img"> Français</button>
+        <button class="lang-option" data-lang="ar"><img src="https://flagcdn.com/w40/sa.png" class="flag-img"> العربية</button>
+      </div>
+    </div>
   </nav>
 
-  <div class="container">
-    <h1>Privacy Policy</h1>
-    <p class="date">Last updated: April 16, 2026</p>
+  <div class="container" id="content"></div>
 
-    <p>NameTune ("we", "our", or "us") operates the NameTune mobile application. This Privacy Policy explains how we collect, use, and protect your information when you use our app.</p>
+  <footer id="footer">&copy; 2026 NameTune. All rights reserved.</footer>
 
-    <h2>1. Information We Collect</h2>
-    <p><strong>Account Information:</strong> When you sign in via Google, Facebook, or Microsoft, we receive your name, email address, and profile picture from the provider. We do not receive or store your password.</p>
-    <p><strong>Usage Data:</strong> We collect anonymous analytics about app usage, such as which features are used and crash reports, to improve the app experience.</p>
-    <p><strong>Content You Create:</strong> Song lyrics, audio files, and related metadata that you generate using the app are stored to provide the service.</p>
+<script>
+const T = {
+en: {
+  title: 'Privacy Policy',
+  date: 'Last updated: April 16, 2026',
+  footer: '&copy; 2026 NameTune. All rights reserved.',
+  content: `
+<p>NameTune ("we", "our", or "us") operates the NameTune mobile application. This Privacy Policy explains how we collect, use, and protect your information when you use our app.</p>
 
-    <h2>2. How We Use Your Information</h2>
-    <ul>
-      <li>To provide and maintain the NameTune service</li>
-      <li>To personalize your experience and generated content</li>
-      <li>To process transactions and manage your credits</li>
-      <li>To send notifications about your audio generation status</li>
-      <li>To improve the app based on usage patterns</li>
-      <li>To detect and prevent abuse or unauthorized use</li>
-    </ul>
+<h2>1. Information We Collect</h2>
+<p><strong>Account Information:</strong> When you sign in via Google, Facebook, or Microsoft, we receive your name, email address, and profile picture from the provider. We do not receive or store your password.</p>
+<p><strong>Usage Data:</strong> We collect anonymous analytics about app usage, such as which features are used and crash reports, to improve the app experience.</p>
+<p><strong>Content You Create:</strong> Song lyrics, audio files, and related metadata that you generate using the app are stored to provide the service.</p>
 
-    <h2>3. Data Storage & Security</h2>
-    <p>Your data is stored securely using Supabase (hosted in the EU, Ireland region) with row-level security policies. Audio files are stored on secure cloud servers. We use industry-standard encryption for data in transit (TLS/SSL).</p>
+<h2>2. How We Use Your Information</h2>
+<ul>
+  <li>To provide and maintain the NameTune service</li>
+  <li>To personalize your experience and generated content</li>
+  <li>To process transactions and manage your credits</li>
+  <li>To send notifications about your audio generation status</li>
+  <li>To improve the app based on usage patterns</li>
+  <li>To detect and prevent abuse or unauthorized use</li>
+</ul>
 
-    <h2>4. Third-Party Services</h2>
-    <p>We use the following third-party services:</p>
-    <ul>
-      <li><strong>Supabase</strong> — Authentication and database (EU region)</li>
-      <li><strong>Google Sign-In, Facebook Login, Microsoft Login</strong> — Authentication providers</li>
-      <li><strong>Sentry</strong> — Error tracking and crash reporting</li>
-      <li><strong>AI Services</strong> — For generating lyrics and audio content (no personal data is sent to AI models beyond the creative input you provide)</li>
-    </ul>
+<h2>3. Data Storage & Security</h2>
+<p>Your data is stored securely using Supabase (hosted in the EU, Ireland region) with row-level security policies. Audio files are stored on secure cloud servers. We use industry-standard encryption for data in transit (TLS/SSL).</p>
 
-    <h2>5. Data Retention</h2>
-    <p>We retain your account data and created content for as long as your account is active. You can delete your account and all associated data at any time by contacting us at <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+<h2>4. Third-Party Services</h2>
+<p>We use the following third-party services:</p>
+<ul>
+  <li><strong>Supabase</strong> — Authentication and database (EU region)</li>
+  <li><strong>Google Sign-In, Facebook Login, Microsoft Login</strong> — Authentication providers</li>
+  <li><strong>Sentry</strong> — Error tracking and crash reporting</li>
+  <li><strong>AI Services</strong> — For generating lyrics and audio content (no personal data is sent to AI models beyond the creative input you provide)</li>
+</ul>
 
-    <h2>6. Your Rights (GDPR)</h2>
-    <p>If you are in the European Economic Area, you have the right to:</p>
-    <ul>
-      <li>Access the personal data we hold about you</li>
-      <li>Request correction of inaccurate data</li>
-      <li>Request deletion of your data</li>
-      <li>Object to or restrict processing of your data</li>
-      <li>Data portability — receive your data in a structured format</li>
-    </ul>
-    <p>To exercise these rights, contact us at <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+<h2>5. Data Retention</h2>
+<p>We retain your account data and created content for as long as your account is active. You can delete your account and all associated data at any time by contacting us at <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
 
-    <h2>7. Children's Privacy</h2>
-    <p>NameTune is not directed at children under 13. We do not knowingly collect personal information from children under 13. The children's audio category (lullabies, stories) is intended for parents and guardians to create content for their children.</p>
+<h2>6. Your Rights (GDPR)</h2>
+<p>If you are in the European Economic Area, you have the right to:</p>
+<ul>
+  <li>Access the personal data we hold about you</li>
+  <li>Request correction of inaccurate data</li>
+  <li>Request deletion of your data</li>
+  <li>Object to or restrict processing of your data</li>
+  <li>Data portability — receive your data in a structured format</li>
+</ul>
+<p>To exercise these rights, contact us at <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
 
-    <h2>8. Changes to This Policy</h2>
-    <p>We may update this Privacy Policy from time to time. We will notify you of significant changes through the app or via email. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+<h2>7. Children's Privacy</h2>
+<p>NameTune is not directed at children under 13. We do not knowingly collect personal information from children under 13. The children's audio category (lullabies, stories) is intended for parents and guardians to create content for their children.</p>
 
-    <h2>9. Contact Us</h2>
-    <p>If you have questions about this Privacy Policy, please contact us:</p>
-    <p>Email: <a href="mailto:support@nametune.com">support@nametune.com</a></p>
-  </div>
+<h2>8. Changes to This Policy</h2>
+<p>We may update this Privacy Policy from time to time. We will notify you of significant changes through the app or via email. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
 
-  <footer>&copy; 2026 NameTune. All rights reserved.</footer>
+<h2>9. Contact Us</h2>
+<p>If you have questions about this Privacy Policy, please contact us:</p>
+<p>Email: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+az: {
+  title: 'Məxfilik Siyasəti',
+  date: 'Son yenilənmə: 16 Aprel 2026',
+  footer: '&copy; 2026 NameTune. Bütün hüquqlar qorunur.',
+  content: `
+<p>NameTune ("biz") NameTune mobil tətbiqini idarə edir. Bu Məxfilik Siyasəti tətbiqimizdən istifadə edərkən məlumatlarınızı necə topladığımızı, istifadə etdiyimizi və qoruduğumuzu izah edir.</p>
+
+<h2>1. Topladığımız Məlumatlar</h2>
+<p><strong>Hesab Məlumatları:</strong> Google, Facebook və ya Microsoft vasitəsilə daxil olduqda provayderdən adınızı, e-poçt ünvanınızı və profil şəklinizi alırıq. Parolunuzu almırıq və saxlamırıq.</p>
+<p><strong>İstifadə Məlumatları:</strong> Tətbiq təcrübəsini yaxşılaşdırmaq üçün hansı funksiyaların istifadə olunduğu və xəta hesabatları kimi anonim analitik məlumatlar toplayırıq.</p>
+<p><strong>Yaratdığınız Məzmun:</strong> Tətbiqdə yaratdığınız mahnı sözləri, audio fayllar və əlaqəli metadata xidməti təmin etmək üçün saxlanılır.</p>
+
+<h2>2. Məlumatlarınızı Necə İstifadə Edirik</h2>
+<ul>
+  <li>NameTune xidmətini təmin etmək və saxlamaq üçün</li>
+  <li>Təcrübənizi və yaradılan məzmunu fərdiləşdirmək üçün</li>
+  <li>Əməliyyatları emal etmək və kreditlərinizi idarə etmək üçün</li>
+  <li>Audio yaradılma statusu haqqında bildirişlər göndərmək üçün</li>
+  <li>İstifadə nümunələri əsasında tətbiqi yaxşılaşdırmaq üçün</li>
+  <li>Sui-istifadəni və icazəsiz istifadəni aşkar etmək və qarşısını almaq üçün</li>
+</ul>
+
+<h2>3. Məlumat Saxlama və Təhlükəsizlik</h2>
+<p>Məlumatlarınız sətir səviyyəli təhlükəsizlik siyasətləri ilə Supabase-də (Aİ, İrlandiya regionunda yerləşdirilir) təhlükəsiz şəkildə saxlanılır. Audio fayllar təhlükəsiz bulud serverlərində saxlanılır. Tranzit zamanı məlumatlar üçün sənaye standartı şifrələmə (TLS/SSL) istifadə edirik.</p>
+
+<h2>4. Üçüncü Tərəf Xidmətləri</h2>
+<p>Aşağıdakı üçüncü tərəf xidmətlərindən istifadə edirik:</p>
+<ul>
+  <li><strong>Supabase</strong> — Autentifikasiya və verilənlər bazası (Aİ regionu)</li>
+  <li><strong>Google, Facebook, Microsoft Girişi</strong> — Autentifikasiya provayderləri</li>
+  <li><strong>Sentry</strong> — Xəta izləmə və qəza hesabatı</li>
+  <li><strong>AI Xidmətləri</strong> — Mahnı sözləri və audio məzmun yaratmaq üçün (təqdim etdiyiniz yaradıcı girişdən başqa heç bir şəxsi məlumat AI modellərinə göndərilmir)</li>
+</ul>
+
+<h2>5. Məlumat Saxlama Müddəti</h2>
+<p>Hesabınız aktiv olduğu müddətdə hesab məlumatlarınızı və yaradılmış məzmunu saxlayırıq. Hesabınızı və bütün əlaqəli məlumatları istənilən vaxt <a href="mailto:support@nametune.com">support@nametune.com</a> ünvanına müraciət edərək silə bilərsiniz.</p>
+
+<h2>6. Hüquqlarınız (GDPR)</h2>
+<p>Avropa İqtisadi Zonasındasınızsa, aşağıdakı hüquqlara maliksiniz:</p>
+<ul>
+  <li>Haqqınızda saxladığımız şəxsi məlumatlara giriş</li>
+  <li>Qeyri-dəqiq məlumatların düzəldilməsini tələb etmək</li>
+  <li>Məlumatlarınızın silinməsini tələb etmək</li>
+  <li>Məlumatlarınızın işlənməsinə etiraz etmək və ya məhdudlaşdırmaq</li>
+  <li>Məlumat daşınması — məlumatlarınızı strukturlaşdırılmış formatda almaq</li>
+</ul>
+<p>Bu hüquqları həyata keçirmək üçün <a href="mailto:support@nametune.com">support@nametune.com</a> ünvanına müraciət edin.</p>
+
+<h2>7. Uşaqların Məxfiliyi</h2>
+<p>NameTune 13 yaşından kiçik uşaqlara yönəldilməyib. 13 yaşından kiçik uşaqlardan bilərəkdən şəxsi məlumat toplamırıq. Uşaq audio kateqoriyası (laylalar, hekayələr) valideynlər və qəyyumlar üçün nəzərdə tutulub.</p>
+
+<h2>8. Bu Siyasətdə Dəyişikliklər</h2>
+<p>Bu Məxfilik Siyasətini vaxtaşırı yeniləyə bilərik. Əhəmiyyətli dəyişikliklər haqqında tətbiq və ya e-poçt vasitəsilə məlumat verəcəyik. Dəyişikliklərdən sonra tətbiqin istifadəsinə davam etmək yenilənmiş siyasətin qəbul edilməsi deməkdir.</p>
+
+<h2>9. Bizimlə Əlaqə</h2>
+<p>Bu Məxfilik Siyasəti haqqında suallarınız varsa, bizimlə əlaqə saxlayın:</p>
+<p>E-poçt: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+tr: {
+  title: 'Gizlilik Politikası',
+  date: 'Son güncelleme: 16 Nisan 2026',
+  footer: '&copy; 2026 NameTune. Tüm hakları saklıdır.',
+  content: `
+<p>NameTune ("biz") NameTune mobil uygulamasını işletmektedir. Bu Gizlilik Politikası, uygulamamızı kullanırken bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklar.</p>
+
+<h2>1. Topladığımız Bilgiler</h2>
+<p><strong>Hesap Bilgileri:</strong> Google, Facebook veya Microsoft ile giriş yaptığınızda sağlayıcıdan adınızı, e-posta adresinizi ve profil fotoğrafınızı alırız. Şifrenizi almaz veya saklamayız.</p>
+<p><strong>Kullanım Verileri:</strong> Uygulama deneyimini iyileştirmek için hangi özelliklerin kullanıldığı ve çökme raporları gibi anonim analitik veriler toplarız.</p>
+<p><strong>Oluşturduğunuz İçerik:</strong> Uygulamada oluşturduğunuz şarkı sözleri, ses dosyaları ve ilgili meta veriler hizmeti sağlamak için saklanır.</p>
+
+<h2>2. Bilgilerinizi Nasıl Kullanırız</h2>
+<ul>
+  <li>NameTune hizmetini sağlamak ve sürdürmek için</li>
+  <li>Deneyiminizi ve oluşturulan içeriği kişiselleştirmek için</li>
+  <li>İşlemleri gerçekleştirmek ve kredilerinizi yönetmek için</li>
+  <li>Ses oluşturma durumu hakkında bildirimler göndermek için</li>
+  <li>Kullanım kalıplarına göre uygulamayı iyileştirmek için</li>
+  <li>Kötüye kullanımı ve yetkisiz kullanımı tespit etmek ve önlemek için</li>
+</ul>
+
+<h2>3. Veri Depolama ve Güvenlik</h2>
+<p>Verileriniz satır düzeyinde güvenlik politikalarıyla Supabase'de (AB, İrlanda bölgesinde barındırılan) güvenli bir şekilde saklanır. Ses dosyaları güvenli bulut sunucularında saklanır. Aktarım sırasında veriler için endüstri standardı şifreleme (TLS/SSL) kullanırız.</p>
+
+<h2>4. Üçüncü Taraf Hizmetleri</h2>
+<p>Aşağıdaki üçüncü taraf hizmetlerini kullanırız:</p>
+<ul>
+  <li><strong>Supabase</strong> — Kimlik doğrulama ve veritabanı (AB bölgesi)</li>
+  <li><strong>Google, Facebook, Microsoft Girişi</strong> — Kimlik doğrulama sağlayıcıları</li>
+  <li><strong>Sentry</strong> — Hata izleme ve çökme raporlama</li>
+  <li><strong>AI Hizmetleri</strong> — Şarkı sözleri ve ses içeriği oluşturmak için (sağladığınız yaratıcı girdi dışında AI modellerine kişisel veri gönderilmez)</li>
+</ul>
+
+<h2>5. Veri Saklama Süresi</h2>
+<p>Hesabınız aktif olduğu sürece hesap verilerinizi ve oluşturulan içeriği saklarız. Hesabınızı ve tüm ilişkili verileri istediğiniz zaman <a href="mailto:support@nametune.com">support@nametune.com</a> adresine başvurarak silebilirsiniz.</p>
+
+<h2>6. Haklarınız (GDPR)</h2>
+<p>Avrupa Ekonomik Alanı'ndaysanız, aşağıdaki haklara sahipsiniz:</p>
+<ul>
+  <li>Hakkınızda tuttuğumuz kişisel verilere erişim</li>
+  <li>Yanlış verilerin düzeltilmesini talep etme</li>
+  <li>Verilerinizin silinmesini talep etme</li>
+  <li>Verilerinizin işlenmesine itiraz etme veya kısıtlama</li>
+  <li>Veri taşınabilirliği — verilerinizi yapılandırılmış formatta alma</li>
+</ul>
+<p>Bu hakları kullanmak için <a href="mailto:support@nametune.com">support@nametune.com</a> adresine başvurun.</p>
+
+<h2>7. Çocukların Gizliliği</h2>
+<p>NameTune 13 yaşın altındaki çocuklara yönelik değildir. 13 yaşın altındaki çocuklardan bilerek kişisel bilgi toplamayız. Çocuk ses kategorisi (ninniler, hikayeler) ebeveynlerin ve velilerin çocukları için içerik oluşturması içindir.</p>
+
+<h2>8. Bu Politikadaki Değişiklikler</h2>
+<p>Bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Önemli değişiklikler uygulama veya e-posta yoluyla bildirilecektir. Değişikliklerden sonra uygulamayı kullanmaya devam etmek güncellenen politikanın kabulü anlamına gelir.</p>
+
+<h2>9. Bize Ulaşın</h2>
+<p>Bu Gizlilik Politikası hakkında sorularınız varsa bizimle iletişime geçin:</p>
+<p>E-posta: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+ru: {
+  title: 'Политика конфиденциальности',
+  date: 'Последнее обновление: 16 апреля 2026 г.',
+  footer: '&copy; 2026 NameTune. Все права защищены.',
+  content: `
+<p>NameTune («мы») управляет мобильным приложением NameTune. Настоящая Политика конфиденциальности объясняет, как мы собираем, используем и защищаем вашу информацию при использовании нашего приложения.</p>
+
+<h2>1. Информация, которую мы собираем</h2>
+<p><strong>Данные аккаунта:</strong> При входе через Google, Facebook или Microsoft мы получаем от провайдера ваше имя, адрес электронной почты и фотографию профиля. Мы не получаем и не храним ваш пароль.</p>
+<p><strong>Данные об использовании:</strong> Мы собираем анонимную аналитику об использовании приложения, например, какие функции используются и отчёты о сбоях, для улучшения работы приложения.</p>
+<p><strong>Созданный вами контент:</strong> Тексты песен, аудиофайлы и связанные метаданные, которые вы создаёте в приложении, хранятся для предоставления сервиса.</p>
+
+<h2>2. Как мы используем вашу информацию</h2>
+<ul>
+  <li>Для предоставления и поддержки сервиса NameTune</li>
+  <li>Для персонализации вашего опыта и создаваемого контента</li>
+  <li>Для обработки транзакций и управления вашими кредитами</li>
+  <li>Для отправки уведомлений о статусе генерации аудио</li>
+  <li>Для улучшения приложения на основе паттернов использования</li>
+  <li>Для обнаружения и предотвращения злоупотреблений или несанкционированного использования</li>
+</ul>
+
+<h2>3. Хранение данных и безопасность</h2>
+<p>Ваши данные надёжно хранятся в Supabase (размещённом в ЕС, регион Ирландия) с политиками безопасности на уровне строк. Аудиофайлы хранятся на защищённых облачных серверах. Мы используем стандартное отраслевое шифрование для данных в пути (TLS/SSL).</p>
+
+<h2>4. Сторонние сервисы</h2>
+<p>Мы используем следующие сторонние сервисы:</p>
+<ul>
+  <li><strong>Supabase</strong> — Аутентификация и база данных (регион ЕС)</li>
+  <li><strong>Вход через Google, Facebook, Microsoft</strong> — Провайдеры аутентификации</li>
+  <li><strong>Sentry</strong> — Отслеживание ошибок и отчёты о сбоях</li>
+  <li><strong>AI-сервисы</strong> — Для генерации текстов и аудиоконтента (никакие личные данные не отправляются в AI-модели, кроме предоставленного вами творческого ввода)</li>
+</ul>
+
+<h2>5. Срок хранения данных</h2>
+<p>Мы храним данные вашего аккаунта и созданный контент, пока ваш аккаунт активен. Вы можете удалить свой аккаунт и все связанные данные в любое время, обратившись по адресу <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>6. Ваши права (GDPR)</h2>
+<p>Если вы находитесь в Европейской экономической зоне, вы имеете право:</p>
+<ul>
+  <li>Получить доступ к личным данным, которые мы храним о вас</li>
+  <li>Запросить исправление неточных данных</li>
+  <li>Запросить удаление ваших данных</li>
+  <li>Возражать против обработки или ограничить обработку ваших данных</li>
+  <li>Переносимость данных — получить ваши данные в структурированном формате</li>
+</ul>
+<p>Для реализации этих прав обратитесь по адресу <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>7. Конфиденциальность детей</h2>
+<p>NameTune не предназначен для детей младше 13 лет. Мы сознательно не собираем личную информацию от детей младше 13 лет. Категория детского аудио (колыбельные, сказки) предназначена для родителей и опекунов.</p>
+
+<h2>8. Изменения в этой политике</h2>
+<p>Мы можем время от времени обновлять эту Политику конфиденциальности. О существенных изменениях мы сообщим через приложение или по электронной почте. Продолжение использования приложения после изменений означает принятие обновлённой политики.</p>
+
+<h2>9. Связаться с нами</h2>
+<p>Если у вас есть вопросы по этой Политике конфиденциальности, свяжитесь с нами:</p>
+<p>Email: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+de: {
+  title: 'Datenschutzrichtlinie',
+  date: 'Zuletzt aktualisiert: 16. April 2026',
+  footer: '&copy; 2026 NameTune. Alle Rechte vorbehalten.',
+  content: `
+<p>NameTune („wir") betreibt die mobile Anwendung NameTune. Diese Datenschutzrichtlinie erklärt, wie wir Ihre Informationen sammeln, verwenden und schützen, wenn Sie unsere App nutzen.</p>
+
+<h2>1. Informationen, die wir sammeln</h2>
+<p><strong>Kontoinformationen:</strong> Wenn Sie sich über Google, Facebook oder Microsoft anmelden, erhalten wir vom Anbieter Ihren Namen, Ihre E-Mail-Adresse und Ihr Profilbild. Wir erhalten oder speichern Ihr Passwort nicht.</p>
+<p><strong>Nutzungsdaten:</strong> Wir sammeln anonyme Analysen über die App-Nutzung, z. B. welche Funktionen verwendet werden und Absturzberichte, um die App zu verbessern.</p>
+<p><strong>Von Ihnen erstellte Inhalte:</strong> Songtexte, Audiodateien und zugehörige Metadaten, die Sie in der App erstellen, werden zur Bereitstellung des Dienstes gespeichert.</p>
+
+<h2>2. Wie wir Ihre Informationen verwenden</h2>
+<ul>
+  <li>Zur Bereitstellung und Wartung des NameTune-Dienstes</li>
+  <li>Zur Personalisierung Ihrer Erfahrung und erstellter Inhalte</li>
+  <li>Zur Verarbeitung von Transaktionen und Verwaltung Ihrer Credits</li>
+  <li>Zum Senden von Benachrichtigungen über den Status der Audiogenerierung</li>
+  <li>Zur Verbesserung der App basierend auf Nutzungsmustern</li>
+  <li>Zur Erkennung und Verhinderung von Missbrauch oder unbefugter Nutzung</li>
+</ul>
+
+<h2>3. Datenspeicherung und Sicherheit</h2>
+<p>Ihre Daten werden sicher in Supabase (gehostet in der EU, Region Irland) mit Sicherheitsrichtlinien auf Zeilenebene gespeichert. Audiodateien werden auf sicheren Cloud-Servern gespeichert. Wir verwenden branchenübliche Verschlüsselung für Daten während der Übertragung (TLS/SSL).</p>
+
+<h2>4. Drittanbieter-Dienste</h2>
+<p>Wir nutzen folgende Drittanbieter-Dienste:</p>
+<ul>
+  <li><strong>Supabase</strong> — Authentifizierung und Datenbank (EU-Region)</li>
+  <li><strong>Google-, Facebook-, Microsoft-Anmeldung</strong> — Authentifizierungsanbieter</li>
+  <li><strong>Sentry</strong> — Fehlerverfolgung und Absturzberichte</li>
+  <li><strong>KI-Dienste</strong> — Zur Generierung von Texten und Audioinhalten (keine persönlichen Daten werden an KI-Modelle gesendet, außer den von Ihnen bereitgestellten kreativen Eingaben)</li>
+</ul>
+
+<h2>5. Datenaufbewahrung</h2>
+<p>Wir bewahren Ihre Kontodaten und erstellten Inhalte auf, solange Ihr Konto aktiv ist. Sie können Ihr Konto und alle zugehörigen Daten jederzeit löschen, indem Sie uns unter <a href="mailto:support@nametune.com">support@nametune.com</a> kontaktieren.</p>
+
+<h2>6. Ihre Rechte (DSGVO)</h2>
+<p>Wenn Sie sich im Europäischen Wirtschaftsraum befinden, haben Sie das Recht:</p>
+<ul>
+  <li>Zugang zu den personenbezogenen Daten, die wir über Sie speichern</li>
+  <li>Berichtigung ungenauer Daten zu verlangen</li>
+  <li>Löschung Ihrer Daten zu verlangen</li>
+  <li>Der Verarbeitung Ihrer Daten zu widersprechen oder sie einzuschränken</li>
+  <li>Datenübertragbarkeit — Ihre Daten in einem strukturierten Format zu erhalten</li>
+</ul>
+<p>Um diese Rechte auszuüben, kontaktieren Sie uns unter <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>7. Datenschutz von Kindern</h2>
+<p>NameTune richtet sich nicht an Kinder unter 13 Jahren. Wir sammeln wissentlich keine persönlichen Informationen von Kindern unter 13 Jahren. Die Kinder-Audio-Kategorie (Schlaflieder, Geschichten) ist für Eltern und Erziehungsberechtigte gedacht.</p>
+
+<h2>8. Änderungen dieser Richtlinie</h2>
+<p>Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Wesentliche Änderungen werden über die App oder per E-Mail mitgeteilt. Die fortgesetzte Nutzung der App nach Änderungen gilt als Annahme der aktualisierten Richtlinie.</p>
+
+<h2>9. Kontakt</h2>
+<p>Bei Fragen zu dieser Datenschutzrichtlinie kontaktieren Sie uns:</p>
+<p>E-Mail: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+es: {
+  title: 'Política de Privacidad',
+  date: 'Última actualización: 16 de abril de 2026',
+  footer: '&copy; 2026 NameTune. Todos los derechos reservados.',
+  content: `
+<p>NameTune ("nosotros") opera la aplicación móvil NameTune. Esta Política de Privacidad explica cómo recopilamos, usamos y protegemos su información cuando usa nuestra aplicación.</p>
+
+<h2>1. Información que Recopilamos</h2>
+<p><strong>Información de la cuenta:</strong> Cuando inicia sesión a través de Google, Facebook o Microsoft, recibimos del proveedor su nombre, dirección de correo electrónico y foto de perfil. No recibimos ni almacenamos su contraseña.</p>
+<p><strong>Datos de uso:</strong> Recopilamos análisis anónimos sobre el uso de la aplicación, como qué funciones se utilizan e informes de fallos, para mejorar la experiencia de la aplicación.</p>
+<p><strong>Contenido que crea:</strong> Las letras de canciones, archivos de audio y metadatos relacionados que genera en la aplicación se almacenan para proporcionar el servicio.</p>
+
+<h2>2. Cómo Usamos Su Información</h2>
+<ul>
+  <li>Para proporcionar y mantener el servicio NameTune</li>
+  <li>Para personalizar su experiencia y el contenido generado</li>
+  <li>Para procesar transacciones y gestionar sus créditos</li>
+  <li>Para enviar notificaciones sobre el estado de generación de audio</li>
+  <li>Para mejorar la aplicación basándonos en patrones de uso</li>
+  <li>Para detectar y prevenir abusos o uso no autorizado</li>
+</ul>
+
+<h2>3. Almacenamiento y Seguridad de Datos</h2>
+<p>Sus datos se almacenan de forma segura en Supabase (alojado en la UE, región de Irlanda) con políticas de seguridad a nivel de fila. Los archivos de audio se almacenan en servidores cloud seguros. Utilizamos cifrado estándar de la industria para datos en tránsito (TLS/SSL).</p>
+
+<h2>4. Servicios de Terceros</h2>
+<p>Utilizamos los siguientes servicios de terceros:</p>
+<ul>
+  <li><strong>Supabase</strong> — Autenticación y base de datos (región UE)</li>
+  <li><strong>Inicio de sesión con Google, Facebook, Microsoft</strong> — Proveedores de autenticación</li>
+  <li><strong>Sentry</strong> — Seguimiento de errores e informes de fallos</li>
+  <li><strong>Servicios de IA</strong> — Para generar letras y contenido de audio (no se envían datos personales a los modelos de IA más allá de la entrada creativa que usted proporciona)</li>
+</ul>
+
+<h2>5. Retención de Datos</h2>
+<p>Conservamos los datos de su cuenta y el contenido creado mientras su cuenta esté activa. Puede eliminar su cuenta y todos los datos asociados en cualquier momento contactándonos en <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>6. Sus Derechos (RGPD)</h2>
+<p>Si se encuentra en el Espacio Económico Europeo, tiene derecho a:</p>
+<ul>
+  <li>Acceder a los datos personales que tenemos sobre usted</li>
+  <li>Solicitar la corrección de datos inexactos</li>
+  <li>Solicitar la eliminación de sus datos</li>
+  <li>Oponerse o restringir el procesamiento de sus datos</li>
+  <li>Portabilidad de datos — recibir sus datos en un formato estructurado</li>
+</ul>
+<p>Para ejercer estos derechos, contáctenos en <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>7. Privacidad de los Niños</h2>
+<p>NameTune no está dirigido a menores de 13 años. No recopilamos conscientemente información personal de menores de 13 años. La categoría de audio infantil (canciones de cuna, cuentos) está destinada a padres y tutores.</p>
+
+<h2>8. Cambios en Esta Política</h2>
+<p>Podemos actualizar esta Política de Privacidad de vez en cuando. Los cambios significativos se comunicarán a través de la aplicación o por correo electrónico. El uso continuado de la aplicación después de los cambios constituye la aceptación de la política actualizada.</p>
+
+<h2>9. Contáctenos</h2>
+<p>Si tiene preguntas sobre esta Política de Privacidad, contáctenos:</p>
+<p>Correo: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+fr: {
+  title: 'Politique de Confidentialité',
+  date: 'Dernière mise à jour : 16 avril 2026',
+  footer: '&copy; 2026 NameTune. Tous droits réservés.',
+  content: `
+<p>NameTune (« nous ») exploite l'application mobile NameTune. Cette Politique de Confidentialité explique comment nous collectons, utilisons et protégeons vos informations lorsque vous utilisez notre application.</p>
+
+<h2>1. Informations que Nous Collectons</h2>
+<p><strong>Informations du compte :</strong> Lorsque vous vous connectez via Google, Facebook ou Microsoft, nous recevons du fournisseur votre nom, votre adresse e-mail et votre photo de profil. Nous ne recevons ni ne stockons votre mot de passe.</p>
+<p><strong>Données d'utilisation :</strong> Nous collectons des analyses anonymes sur l'utilisation de l'application, telles que les fonctionnalités utilisées et les rapports de plantage, pour améliorer l'expérience de l'application.</p>
+<p><strong>Contenu que vous créez :</strong> Les paroles de chansons, fichiers audio et métadonnées associées que vous générez dans l'application sont stockés pour fournir le service.</p>
+
+<h2>2. Comment Nous Utilisons Vos Informations</h2>
+<ul>
+  <li>Pour fournir et maintenir le service NameTune</li>
+  <li>Pour personnaliser votre expérience et le contenu généré</li>
+  <li>Pour traiter les transactions et gérer vos crédits</li>
+  <li>Pour envoyer des notifications sur le statut de génération audio</li>
+  <li>Pour améliorer l'application en fonction des habitudes d'utilisation</li>
+  <li>Pour détecter et prévenir les abus ou l'utilisation non autorisée</li>
+</ul>
+
+<h2>3. Stockage et Sécurité des Données</h2>
+<p>Vos données sont stockées en toute sécurité dans Supabase (hébergé dans l'UE, région Irlande) avec des politiques de sécurité au niveau des lignes. Les fichiers audio sont stockés sur des serveurs cloud sécurisés. Nous utilisons un chiffrement standard de l'industrie pour les données en transit (TLS/SSL).</p>
+
+<h2>4. Services Tiers</h2>
+<p>Nous utilisons les services tiers suivants :</p>
+<ul>
+  <li><strong>Supabase</strong> — Authentification et base de données (région UE)</li>
+  <li><strong>Connexion Google, Facebook, Microsoft</strong> — Fournisseurs d'authentification</li>
+  <li><strong>Sentry</strong> — Suivi des erreurs et rapports de plantage</li>
+  <li><strong>Services IA</strong> — Pour la génération de paroles et de contenu audio (aucune donnée personnelle n'est envoyée aux modèles d'IA au-delà de l'entrée créative que vous fournissez)</li>
+</ul>
+
+<h2>5. Conservation des Données</h2>
+<p>Nous conservons les données de votre compte et le contenu créé tant que votre compte est actif. Vous pouvez supprimer votre compte et toutes les données associées à tout moment en nous contactant à <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>6. Vos Droits (RGPD)</h2>
+<p>Si vous êtes dans l'Espace Économique Européen, vous avez le droit de :</p>
+<ul>
+  <li>Accéder aux données personnelles que nous détenons à votre sujet</li>
+  <li>Demander la correction de données inexactes</li>
+  <li>Demander la suppression de vos données</li>
+  <li>Vous opposer au traitement ou le restreindre</li>
+  <li>Portabilité des données — recevoir vos données dans un format structuré</li>
+</ul>
+<p>Pour exercer ces droits, contactez-nous à <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>7. Confidentialité des Enfants</h2>
+<p>NameTune ne s'adresse pas aux enfants de moins de 13 ans. Nous ne collectons pas sciemment d'informations personnelles auprès d'enfants de moins de 13 ans. La catégorie audio pour enfants (berceuses, histoires) est destinée aux parents et tuteurs.</p>
+
+<h2>8. Modifications de Cette Politique</h2>
+<p>Nous pouvons mettre à jour cette Politique de Confidentialité de temps en temps. Les changements importants seront communiqués via l'application ou par e-mail. L'utilisation continue de l'application après les modifications constitue l'acceptation de la politique mise à jour.</p>
+
+<h2>9. Nous Contacter</h2>
+<p>Si vous avez des questions sur cette Politique de Confidentialité, contactez-nous :</p>
+<p>E-mail : <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+},
+ar: {
+  title: 'سياسة الخصوصية',
+  date: 'آخر تحديث: 16 أبريل 2026',
+  footer: '&copy; 2026 NameTune. جميع الحقوق محفوظة.',
+  content: `
+<p>تقوم NameTune ("نحن") بتشغيل تطبيق NameTune للهاتف المحمول. توضح سياسة الخصوصية هذه كيف نجمع معلوماتك ونستخدمها ونحميها عند استخدام تطبيقنا.</p>
+
+<h2>1. المعلومات التي نجمعها</h2>
+<p><strong>معلومات الحساب:</strong> عند تسجيل الدخول عبر Google أو Facebook أو Microsoft، نتلقى من المزود اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي. لا نتلقى أو نخزن كلمة مرورك.</p>
+<p><strong>بيانات الاستخدام:</strong> نجمع تحليلات مجهولة الهوية حول استخدام التطبيق، مثل الميزات المستخدمة وتقارير الأعطال، لتحسين تجربة التطبيق.</p>
+<p><strong>المحتوى الذي تنشئه:</strong> يتم تخزين كلمات الأغاني وملفات الصوت والبيانات الوصفية ذات الصلة التي تنشئها في التطبيق لتقديم الخدمة.</p>
+
+<h2>2. كيف نستخدم معلوماتك</h2>
+<ul>
+  <li>لتوفير وصيانة خدمة NameTune</li>
+  <li>لتخصيص تجربتك والمحتوى المُنشأ</li>
+  <li>لمعالجة المعاملات وإدارة أرصدتك</li>
+  <li>لإرسال إشعارات حول حالة إنشاء الصوت</li>
+  <li>لتحسين التطبيق بناءً على أنماط الاستخدام</li>
+  <li>لاكتشاف ومنع إساءة الاستخدام أو الاستخدام غير المصرح به</li>
+</ul>
+
+<h2>3. تخزين البيانات والأمان</h2>
+<p>يتم تخزين بياناتك بشكل آمن في Supabase (مستضاف في الاتحاد الأوروبي، منطقة أيرلندا) مع سياسات أمان على مستوى الصف. يتم تخزين ملفات الصوت على خوادم سحابية آمنة. نستخدم تشفيرًا قياسيًا في الصناعة للبيانات أثناء النقل (TLS/SSL).</p>
+
+<h2>4. خدمات الطرف الثالث</h2>
+<p>نستخدم خدمات الطرف الثالث التالية:</p>
+<ul>
+  <li><strong>Supabase</strong> — المصادقة وقاعدة البيانات (منطقة الاتحاد الأوروبي)</li>
+  <li><strong>تسجيل الدخول عبر Google وFacebook وMicrosoft</strong> — مزودو المصادقة</li>
+  <li><strong>Sentry</strong> — تتبع الأخطاء وتقارير الأعطال</li>
+  <li><strong>خدمات الذكاء الاصطناعي</strong> — لإنشاء كلمات الأغاني والمحتوى الصوتي (لا يتم إرسال بيانات شخصية إلى نماذج الذكاء الاصطناعي بخلاف المدخلات الإبداعية التي تقدمها)</li>
+</ul>
+
+<h2>5. الاحتفاظ بالبيانات</h2>
+<p>نحتفظ ببيانات حسابك والمحتوى المُنشأ طالما أن حسابك نشط. يمكنك حذف حسابك وجميع البيانات المرتبطة في أي وقت عن طريق الاتصال بنا على <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>6. حقوقك (GDPR)</h2>
+<p>إذا كنت في المنطقة الاقتصادية الأوروبية، فلديك الحق في:</p>
+<ul>
+  <li>الوصول إلى البيانات الشخصية التي نحتفظ بها عنك</li>
+  <li>طلب تصحيح البيانات غير الدقيقة</li>
+  <li>طلب حذف بياناتك</li>
+  <li>الاعتراض على معالجة بياناتك أو تقييدها</li>
+  <li>قابلية نقل البيانات — الحصول على بياناتك بتنسيق منظم</li>
+</ul>
+<p>لممارسة هذه الحقوق، اتصل بنا على <a href="mailto:support@nametune.com">support@nametune.com</a>.</p>
+
+<h2>7. خصوصية الأطفال</h2>
+<p>NameTune غير موجه للأطفال دون سن 13 عامًا. لا نجمع عن قصد معلومات شخصية من أطفال دون 13 عامًا. فئة الصوت للأطفال (التهويدات والقصص) مخصصة للآباء والأوصياء.</p>
+
+<h2>8. التغييرات على هذه السياسة</h2>
+<p>قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. سيتم إبلاغك بالتغييرات المهمة عبر التطبيق أو البريد الإلكتروني. يعتبر الاستمرار في استخدام التطبيق بعد التغييرات قبولاً للسياسة المحدثة.</p>
+
+<h2>9. اتصل بنا</h2>
+<p>إذا كانت لديك أسئلة حول سياسة الخصوصية هذه، تواصل معنا:</p>
+<p>البريد الإلكتروني: <a href="mailto:support@nametune.com">support@nametune.com</a></p>`
+}
+};
+
+const FLAGS = {en:'gb',az:'az',tr:'tr',ru:'ru',de:'de',es:'es',fr:'fr',ar:'sa'};
+
+function setLang(lang) {
+  const t = T[lang] || T.en;
+  document.getElementById('content').innerHTML = '<h1>'+t.title+'</h1><p class="date">'+t.date+'</p>'+t.content;
+  document.getElementById('footer').innerHTML = t.footer;
+  document.getElementById('langFlag').src = 'https://flagcdn.com/w40/'+FLAGS[lang]+'.png';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = t.title + ' — NameTune';
+  document.querySelectorAll('.lang-option').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  localStorage.setItem('nt_lang', lang);
+}
+
+const langBtn = document.getElementById('langBtn');
+const langDrop = document.getElementById('langDropdown');
+langBtn.addEventListener('click', () => { langDrop.classList.toggle('show'); langBtn.classList.toggle('open'); });
+document.addEventListener('click', e => { if (!e.target.closest('.lang-select')) { langDrop.classList.remove('show'); langBtn.classList.remove('open'); } });
+document.querySelectorAll('.lang-option').forEach(b => b.addEventListener('click', () => {
+  setLang(b.dataset.lang);
+  langDrop.classList.remove('show'); langBtn.classList.remove('open');
+}));
+
+const saved = localStorage.getItem('nt_lang') || (navigator.language||'').slice(0,2);
+setLang(T[saved] ? saved : 'en');
+</script>
 </body>
 </html>
