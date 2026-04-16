@@ -1462,17 +1462,25 @@
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
     const overlay = document.getElementById('mobileOverlay');
+    const navbar = document.getElementById('navbar');
     function toggleMenu() {
+      const opening = !navLinks.classList.contains('open');
+      if (opening) {
+        document.body.appendChild(navLinks);
+      } else {
+        navbar.insertBefore(navLinks, hamburger);
+      }
       hamburger.classList.toggle('open');
       navLinks.classList.toggle('open');
       overlay.classList.toggle('show');
-      document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+      document.body.style.overflow = opening ? 'hidden' : '';
     }
     function closeMenu() {
       hamburger.classList.remove('open');
       navLinks.classList.remove('open');
       overlay.classList.remove('show');
       document.body.style.overflow = '';
+      navbar.insertBefore(navLinks, hamburger);
     }
     hamburger.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', closeMenu);
