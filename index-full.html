@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NameTune — Personalized AI Music & Audio</title>
+  <meta name="description" content="Create personalized songs, lullabies, birthday anthems, and motivational audio with AI. Made for the moments that matter.">
+  <meta property="og:title" content="NameTune — Personalized AI Music & Audio">
+  <meta property="og:description" content="Create personalized songs with AI. Made for the moments that matter.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nametune.com">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #060611;
+      --bg2: #0A0A1F;
+      --bg3: #0F0F2A;
+      --primary: #7B4FE0;
+      --primary-light: #9B7AEA;
+      --accent: #E8436E;
+      --accent2: #FF6B9D;
+      --cyan: #3ECFCF;
+      --text: #EAEAF0;
+      --text2: #8888A0;
+      --text3: #55556A;
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-user-select: none; user-select: none;
+    }
+
+    /* ═══ Animated background mesh ═══ */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+      background:
+        radial-gradient(ellipse 800px 600px at 20% 20%, rgba(123,79,224,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 500px at 80% 60%, rgba(232,67,110,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 400px at 50% 80%, rgba(62,207,207,0.04) 0%, transparent 70%);
+      animation: mesh-rotate 40s linear infinite;
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 700px 500px at 70% 30%, rgba(123,79,224,0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 600px at 30% 70%, rgba(232,67,110,0.035) 0%, transparent 70%);
+      animation: mesh-rotate 55s linear infinite reverse;
+    }
+
+    /* ═══ Animations ═══ */
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+    @keyframes pulse-glow { 0%,100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } }
+    @keyframes slide-up { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes wave { 0%,100% { transform: scaleY(0.5); } 50% { transform: scaleY(1.2); } }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes drift { 0% { transform: translate(0, 0); } 25% { transform: translate(60px, -40px); } 50% { transform: translate(-30px, 50px); } 75% { transform: translate(-60px, -20px); } 100% { transform: translate(0, 0); } }
+    @keyframes mesh-rotate { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.15); } 100% { transform: rotate(360deg) scale(1); } }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ═══ Nav ═══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 997;
+      padding: 14px 32px;
+      background: rgba(6,6,17,0.7);
+      backdrop-filter: blur(24px) saturate(1.5);
+      -webkit-backdrop-filter: blur(24px) saturate(1.5);
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(123,79,224,0.08);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    nav.scrolled { background: rgba(6,6,17,0.92); box-shadow: 0 4px 30px rgba(0,0,0,0.3); }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      box-shadow: 0 2px 12px rgba(123,79,224,0.3);
+      transition: transform 0.3s;
+    }
+    .logo:hover .logo-icon { transform: rotate(-10deg) scale(1.1); }
+    .logo-text { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a { color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.3s; position: relative; white-space: nowrap; }
+    .nav-links a:not(.btn-nav):hover { color: var(--text); }
+    .nav-links a:not(.btn-nav)::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 1px; transition: width 0.3s;
+    }
+    .nav-links a:not(.btn-nav):hover::after { width: 100%; }
+    .btn-nav {
+      padding: 10px 22px !important; border-radius: 10px !important; font-size: 13px !important; font-weight: 600 !important;
+      background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+      color: #fff !important; box-shadow: 0 2px 16px rgba(123,79,224,0.25);
+      transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .btn-nav:hover { transform: translateY(-1px) !important; box-shadow: 0 4px 20px rgba(123,79,224,0.4) !important; }
+
+    /* ═══ Language Selector ═══ */
+    .lang-select {
+      position: relative; margin-left: 4px;
+    }
+    .lang-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; cursor: pointer;
+      transition: all 0.3s; padding: 0;
+    }
+    .lang-btn:hover { border-color: rgba(123,79,224,0.4); background: rgba(123,79,224,0.1); transform: scale(1.1); }
+    .lang-btn.open { border-color: var(--primary); box-shadow: 0 0 12px rgba(123,79,224,0.3); }
+    .lang-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; min-width: 170px;
+      background: var(--bg2); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: all 0.2s; z-index: 200;
+    }
+    .lang-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    .lang-option {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text2);
+      transition: all 0.2s; border: none; background: none; width: 100%; font-family: inherit;
+    }
+    .lang-option:hover { background: rgba(123,79,224,0.1); color: var(--text); }
+    .lang-option.active { color: var(--primary-light); background: rgba(123,79,224,0.08); }
+    .flag-img { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; }
+    .lang-btn .flag-img { width: 24px; height: 18px; border-radius: 3px; }
+
+    /* ═══ Hero ═══ */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 140px 24px 100px; position: relative;
+    }
+
+    /* Animated background orbs */
+    .orb {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(80px);
+    }
+    .orb-1 {
+      width: 600px; height: 600px; top: -150px; right: -200px;
+      background: radial-gradient(circle, rgba(123,79,224,0.2) 0%, transparent 70%);
+      animation: pulse-glow 8s ease-in-out infinite, drift 25s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 500px; height: 500px; bottom: -100px; left: -200px;
+      background: radial-gradient(circle, rgba(232,67,110,0.14) 0%, transparent 70%);
+      animation: pulse-glow 10s ease-in-out infinite 2s, drift 30s ease-in-out infinite 3s;
+    }
+    .orb-3 {
+      width: 300px; height: 300px; top: 30%; left: 50%;
+      background: radial-gradient(circle, rgba(62,207,207,0.08) 0%, transparent 70%);
+      animation: pulse-glow 12s ease-in-out infinite 4s, drift 20s ease-in-out infinite 5s;
+    }
+
+    /* Floating music notes */
+    .floating-notes {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+    }
+    .note {
+      position: absolute; font-size: 24px; opacity: 0.12;
+      animation: float 6s ease-in-out infinite;
+    }
+    .note:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; animation-duration: 7s; }
+    .note:nth-child(2) { top: 25%; right: 12%; animation-delay: 1s; animation-duration: 5s; font-size: 32px; }
+    .note:nth-child(3) { bottom: 30%; left: 15%; animation-delay: 2s; animation-duration: 8s; }
+    .note:nth-child(4) { top: 40%; right: 20%; animation-delay: 3s; animation-duration: 6s; font-size: 20px; }
+    .note:nth-child(5) { bottom: 20%; right: 8%; animation-delay: 1.5s; animation-duration: 9s; font-size: 28px; }
+    .note:nth-child(6) { top: 60%; left: 5%; animation-delay: 4s; animation-duration: 7s; }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-radius: 100px;
+      background: rgba(123,79,224,0.08); border: 1px solid rgba(123,79,224,0.15);
+      font-size: 13px; font-weight: 600; color: var(--primary-light);
+      margin-bottom: 28px; animation: slide-up 0.8s ease both;
+      backdrop-filter: blur(10px);
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 6.5vw, 76px); font-weight: 900;
+      letter-spacing: -3px; line-height: 1.05; margin-bottom: 24px;
+      max-width: 750px; animation: slide-up 0.8s ease 0.15s both;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--primary-light), var(--accent2), var(--cyan));
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradient-shift 5s ease infinite;
+    }
+
+    .hero p {
+      font-size: 18px; color: var(--text2); max-width: 540px;
+      margin: 0 auto 44px; line-height: 1.8; animation: slide-up 0.8s ease 0.3s both;
+    }
+
+    .cta-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; animation: slide-up 0.8s ease 0.45s both; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 18px 36px; border-radius: 16px; font-size: 16px; font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; text-decoration: none;
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1), box-shadow 0.3s;
+      box-shadow: 0 4px 24px rgba(123,79,224,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(123,79,224,0.45); }
+    .btn-primary:hover::before { opacity: 1; }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 18px 36px; border-radius: 16px; font-size: 16px; font-weight: 600;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text); text-decoration: none;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: fade-in 1s ease 1.5s both;
+    }
+    .scroll-indicator span { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 2px; text-transform: uppercase; }
+    .scroll-mouse {
+      width: 24px; height: 38px; border: 2px solid var(--text3); border-radius: 12px;
+      position: relative;
+    }
+    .scroll-mouse::before {
+      content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 3px; height: 8px; border-radius: 2px; background: var(--text2);
+      animation: scroll-dot 2s ease-in-out infinite;
+    }
+    @keyframes scroll-dot { 0% { top: 8px; opacity: 1; } 100% { top: 22px; opacity: 0; } }
+
+    /* ═══ Stats bar ═══ */
+    .stats-bar {
+      padding: 48px 24px;
+      border-top: 1px solid rgba(123,79,224,0.1);
+      border-bottom: 1px solid rgba(123,79,224,0.1);
+      background: linear-gradient(135deg, rgba(123,79,224,0.03) 0%, rgba(232,67,110,0.02) 50%, rgba(62,207,207,0.02) 100%);
+    }
+    .stats-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; justify-content: space-around; flex-wrap: wrap; gap: 32px;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 36px; font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 13px; color: var(--text3); font-weight: 500; margin-top: 4px; }
+
+    /* ═══ Section glow accents ═══ */
+    .features, .how-it-works, .categories, .about-section, .contact-section { position: relative; }
+    .features::before {
+      content: ''; position: absolute; top: -100px; left: -200px; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(123,79,224,0.05) 0%, transparent 70%);
+      pointer-events: none; filter: blur(60px);
+    }
+    .how-it-works::before {
+      content: ''; position: absolute; top: 0; right: -200px; width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(232,67,110,0.04) 0%, transparent 70%);
+      pointer-events: none; filter: blur(60px);
+    }
+    .categories::before {
+      content: ''; position: absolute; bottom: -50px; left: 50%; width: 500px; height: 400px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(62,207,207,0.04) 0%, transparent 70%);
+      pointer-events: none; filter: blur(60px);
+    }
+
+    /* ═══ Features ═══ */
+    .features { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-label {
+      display: inline-block; padding: 6px 14px; border-radius: 8px;
+      background: rgba(123,79,224,0.08); color: var(--primary-light);
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-header h2 {
+      font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 14px;
+    }
+    .section-header p { font-size: 16px; color: var(--text2); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .feature-card {
+      padding: 36px 28px; border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: border-color 0.4s, transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(123,79,224,0.3), transparent);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .feature-card:hover { border-color: rgba(123,79,224,0.2); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon-wrap {
+      width: 56px; height: 56px; border-radius: 16px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; position: relative;
+    }
+    .feature-icon-wrap::before {
+      content: ''; position: absolute; inset: 0; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(123,79,224,0.12), rgba(232,67,110,0.08));
+    }
+    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+    .feature-card p { font-size: 14px; color: var(--text2); line-height: 1.75; }
+
+    /* ═══ How it works ═══ */
+    .how-it-works { padding: 100px 24px; background: var(--bg2); position: relative; overflow: hidden; }
+    .how-it-works::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(123,79,224,0.2), transparent);
+    }
+    .steps-container { max-width: 900px; margin: 0 auto; }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+      position: relative; margin-top: 64px;
+    }
+    .steps::before {
+      content: ''; position: absolute; top: 40px; left: 15%; right: 15%; height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--cyan));
+      opacity: 0.15; z-index: 0;
+    }
+    .step {
+      text-align: center; position: relative; z-index: 1;
+    }
+    .step-num {
+      width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800;
+      background: linear-gradient(135deg, var(--bg), var(--bg3));
+      border: 2px solid rgba(123,79,224,0.2);
+      color: var(--primary-light); position: relative;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .step:hover .step-num { transform: scale(1.1); border-color: var(--primary); }
+    .step-num::after {
+      content: ''; position: absolute; inset: -6px; border-radius: 50%;
+      border: 1px solid rgba(123,79,224,0.08);
+    }
+    .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--text2); line-height: 1.7; max-width: 260px; margin: 0 auto; }
+
+    /* ═══ Audio Wave Visualizer ═══ */
+    .wave-section {
+      padding: 80px 24px; display: flex; justify-content: center; align-items: center; gap: 4px;
+      background: linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .wave-bar {
+      width: 4px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      animation: wave 1.2s ease-in-out infinite;
+      opacity: 0.5;
+    }
+    .wave-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+    .wave-bar:nth-child(2) { height: 35px; animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { height: 50px; animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { height: 40px; animation-delay: 0.3s; }
+    .wave-bar:nth-child(5) { height: 60px; animation-delay: 0.4s; }
+    .wave-bar:nth-child(6) { height: 45px; animation-delay: 0.5s; }
+    .wave-bar:nth-child(7) { height: 55px; animation-delay: 0.6s; }
+    .wave-bar:nth-child(8) { height: 30px; animation-delay: 0.7s; }
+    .wave-bar:nth-child(9) { height: 50px; animation-delay: 0.8s; }
+    .wave-bar:nth-child(10) { height: 40px; animation-delay: 0.9s; }
+    .wave-bar:nth-child(11) { height: 25px; animation-delay: 1.0s; }
+    .wave-bar:nth-child(12) { height: 45px; animation-delay: 0.15s; }
+    .wave-bar:nth-child(13) { height: 35px; animation-delay: 0.25s; }
+    .wave-bar:nth-child(14) { height: 55px; animation-delay: 0.35s; }
+    .wave-bar:nth-child(15) { height: 30px; animation-delay: 0.45s; }
+    .wave-bar:nth-child(16) { height: 50px; animation-delay: 0.55s; }
+    .wave-bar:nth-child(17) { height: 40px; animation-delay: 0.65s; }
+    .wave-bar:nth-child(18) { height: 60px; animation-delay: 0.75s; }
+    .wave-bar:nth-child(19) { height: 35px; animation-delay: 0.85s; }
+    .wave-bar:nth-child(20) { height: 20px; animation-delay: 0.95s; }
+
+    /* ═══ Categories ═══ */
+    .categories { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+    .cat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;
+    }
+    .cat-card {
+      padding: 28px 16px; border-radius: var(--radius); text-align: center;
+      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1), border-color 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .cat-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(123,79,224,0.25);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    }
+    .cat-emoji {
+      font-size: 44px; margin-bottom: 14px;
+      transition: transform 0.3s;
+    }
+    .cat-card:hover .cat-emoji { transform: scale(1.15) rotate(-5deg); }
+    .cat-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.2px; }
+    .cat-card p { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+    /* ═══ Testimonials / Marquee ═══ */
+    .marquee-section {
+      padding: 60px 0; overflow: hidden;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.01);
+    }
+    .marquee-track {
+      display: flex; gap: 20px; width: max-content;
+      animation: marquee 30s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .testimonial {
+      flex-shrink: 0; width: 320px; padding: 24px; border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    }
+    .testimonial-stars { color: #FFB800; font-size: 14px; margin-bottom: 10px; }
+    .testimonial p { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 12px; font-style: italic; }
+    .testimonial-author { font-size: 12px; font-weight: 600; color: var(--text3); }
+
+    /* ═══ Languages ═══ */
+    .languages { padding: 80px 24px; text-align: center; }
+    .lang-grid {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
+      max-width: 600px; margin: 40px auto 0;
+    }
+    .lang-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 100px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      font-size: 14px; font-weight: 500; color: var(--text2);
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+    }
+    .lang-pill:hover { border-color: rgba(123,79,224,0.3); color: var(--text); background: rgba(123,79,224,0.06); }
+
+    /* ═══ About ═══ */
+    .about-section {
+      padding: 100px 24px; max-width: 800px; margin: 0 auto;
+    }
+    .about-content {
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .about-content p {
+      font-size: 16px; color: var(--text2); line-height: 1.9;
+    }
+
+    /* ═══ Contact ═══ */
+    .contact-section {
+      padding: 100px 24px; max-width: 1100px; margin: 0 auto;
+    }
+    .contact-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px;
+    }
+    .contact-card {
+      background: var(--bg2); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius); padding: 36px 28px; text-align: center;
+      text-decoration: none; transition: all 0.3s;
+    }
+    .contact-card:hover {
+      border-color: rgba(123,79,224,0.3); transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(123,79,224,0.15);
+    }
+    .contact-icon { font-size: 32px; margin-bottom: 16px; }
+    .contact-card h4 { color: var(--text); font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .contact-card p { color: var(--text2); font-size: 14px; margin: 0; }
+
+    /* ═══ CTA ═══ */
+    .cta-section {
+      padding: 120px 24px; text-align: center; position: relative;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(123,79,224,0.1) 0%, rgba(232,67,110,0.04) 50%, transparent 70%);
+      animation: pulse-glow 10s ease-in-out infinite;
+    }
+    .cta-content { position: relative; z-index: 1; }
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 16px;
+    }
+    .cta-section p { font-size: 17px; color: var(--text2); margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+
+    /* ═══ Footer ═══ */
+    footer {
+      padding: 60px 24px 32px; max-width: 1100px; margin: 0 auto;
+      border-top: 1px solid rgba(123,79,224,0.1);
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand p { font-size: 14px; color: var(--text2); line-height: 1.7; margin-top: 12px; max-width: 300px; }
+    .footer-col h4 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .footer-col a { display: block; color: var(--text2); text-decoration: none; font-size: 14px; padding: 4px 0; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer-copy { font-size: 12px; color: var(--text3); }
+    .social-links { display: flex; gap: 16px; }
+    .social-links a {
+      width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text2); text-decoration: none; font-size: 16px;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .social-links a:hover { background: rgba(123,79,224,0.1); border-color: rgba(123,79,224,0.3); color: var(--primary-light); }
+
+    /* ═══ Responsive ═══ */
+    /* ═══ Hamburger menu ═══ */
+    .hamburger {
+      display: none; background: none; border: none; cursor: pointer;
+      flex-direction: column; gap: 5px; padding: 8px; z-index: 201;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px; background: var(--text);
+      border-radius: 2px; transition: all 0.3s; transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    .mobile-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 998; display: none;
+    }
+    .mobile-overlay.show { display: block; }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 16px; }
+      .hero { padding: 120px 20px 80px; }
+      .hero h1 { font-size: 36px; letter-spacing: -1.5px; }
+      .hero p { font-size: 15px; }
+      .hero-badge { font-size: 11px; padding: 6px 14px; }
+      .cta-row { flex-direction: column; gap: 12px; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+      .stats-inner { gap: 16px; flex-wrap: wrap; }
+      .stat { flex: 1 1 40%; }
+      .stat-num { font-size: 26px; }
+      .stat-label { font-size: 11px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; gap: 40px; }
+      .steps::before { display: none; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .cat-card { padding: 20px 12px; }
+      .cat-emoji { font-size: 28px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .about-section { padding: 60px 20px; }
+      .contact-section { padding: 60px 20px; }
+      .lang-grid { flex-wrap: wrap; justify-content: center; }
+      .marquee-section { padding: 40px 0; }
+      .testimonial { min-width: 260px; padding: 20px; }
+      .cta-section { padding: 80px 20px; }
+      .cta-section h2 { font-size: 26px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; }
+      .scroll-indicator { display: none; }
+    }
+
+    @media (max-width: 1024px) {
+      .nav-links { gap: 14px; }
+      .nav-links a { font-size: 12px; }
+      .btn-nav { padding: 8px 16px !important; font-size: 11px !important; }
+    }
+
+    .menu-close {
+      display: none; position: absolute; top: 20px; right: 20px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%; width: 36px; height: 36px;
+      color: var(--text); font-size: 20px; cursor: pointer;
+      align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .menu-close:hover { background: rgba(255,255,255,0.1); }
+
+    @media (max-width: 900px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
+        background: var(--bg2); flex-direction: column; align-items: center;
+        padding: 80px 24px 28px; gap: 0; z-index: 999;
+        border-left: 1px solid rgba(123,79,224,0.1);
+        transition: right 0.3s ease; box-shadow: -12px 0 40px rgba(0,0,0,0.6);
+        overflow-y: auto;
+      }
+      .nav-links.open { right: 0; }
+      .nav-links .menu-close { display: flex; }
+      .nav-links a:not(.btn-nav) {
+        display: block !important; padding: 16px 0; width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 16px !important;
+        white-space: normal; text-align: center;
+      }
+      .nav-links a:not(.btn-nav)::after { display: none !important; }
+      .nav-links .btn-nav {
+        margin-top: 24px; width: 100%; text-align: center;
+        display: block !important; padding: 14px 22px !important; font-size: 14px !important;
+      }
+      .nav-links .lang-select { margin: 24px 0 0 0; }
+      .nav-links .lang-dropdown {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        right: auto; min-width: 220px; z-index: 1001;
+      }
+      .nav-links .lang-dropdown.show { transform: translate(-50%, -50%); opacity: 1; visibility: visible; }
+    }
+
+    @media (max-width: 420px) {
+      .hero h1 { font-size: 30px; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat { flex: 1 1 45%; }
+    }
+
+    /* ═══ Custom cursor glow (desktop only) ═══ */
+    .cursor-glow {
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,79,224,0.04) 0%, transparent 70%);
+      position: fixed; pointer-events: none; z-index: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+    @media (max-width: 768px) { .cursor-glow { display: none; } }
+
+    /* ═══ RTL Support ═══ */
+    [dir="rtl"] body { direction: rtl; text-align: right; }
+    [dir="rtl"] nav { direction: ltr; }
+    [dir="rtl"] .nav-links { direction: rtl; }
+    [dir="rtl"] .nav-links a { direction: rtl; unicode-bidi: plaintext; }
+    [dir="rtl"] .lang-dropdown { direction: rtl; left: 0; right: auto; }
+    [dir="rtl"] .lang-option { direction: rtl; text-align: right; }
+    [dir="rtl"] .hero, [dir="rtl"] .section-header, [dir="rtl"] .cta-content,
+    [dir="rtl"] .stats-inner, [dir="rtl"] .stat { text-align: center; }
+    [dir="rtl"] .hero-content, [dir="rtl"] .cta-row { direction: rtl; }
+    [dir="rtl"] .feature-card, [dir="rtl"] .step, [dir="rtl"] .cat-card,
+    [dir="rtl"] .contact-card { text-align: center; }
+    [dir="rtl"] .about-content { direction: rtl; text-align: right; }
+    [dir="rtl"] .footer-brand, [dir="rtl"] .footer-col { direction: rtl; text-align: right; }
+    [dir="rtl"] .footer-col a { text-align: right; }
+    [dir="rtl"] .marquee-track { direction: ltr; }
+    [dir="rtl"] .testimonial { direction: rtl; text-align: right; }
+    [dir="rtl"] .scroll-indicator { direction: ltr; }
+  </style>
+</head>
+<body id="top">
+
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <nav id="navbar">
+    <a href="/" class="logo">
+      <div class="logo-icon">🎵</div>
+      <span class="logo-text">NameTune</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <button class="menu-close" id="menuClose">✕</button>
+      <a href="#top" data-i18n="nav_home">Home</a>
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#how" data-i18n="nav_how">How It Works</a>
+      <a href="#categories" data-i18n="nav_categories">Categories</a>
+      <a href="#about" data-i18n="nav_about">About</a>
+      <a href="#contact" data-i18n="nav_contact">Contact</a>
+      <a href="https://play.google.com/store" class="btn-nav" data-i18n="nav_getapp">Get the App</a>
+      <div class="lang-select">
+        <button class="lang-btn" id="langBtn" title="Language">
+          <img id="langFlag" src="https://flagcdn.com/w40/gb.png" alt="" class="flag-img">
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-option active" data-lang="en"><img src="https://flagcdn.com/w40/gb.png" class="flag-img"> English</button>
+          <button class="lang-option" data-lang="az"><img src="https://flagcdn.com/w40/az.png" class="flag-img"> Azərbaycan</button>
+          <button class="lang-option" data-lang="tr"><img src="https://flagcdn.com/w40/tr.png" class="flag-img"> Türkçe</button>
+          <button class="lang-option" data-lang="ru"><img src="https://flagcdn.com/w40/ru.png" class="flag-img"> Русский</button>
+          <button class="lang-option" data-lang="de"><img src="https://flagcdn.com/w40/de.png" class="flag-img"> Deutsch</button>
+          <button class="lang-option" data-lang="es"><img src="https://flagcdn.com/w40/es.png" class="flag-img"> Español</button>
+          <button class="lang-option" data-lang="fr"><img src="https://flagcdn.com/w40/fr.png" class="flag-img"> Français</button>
+          <button class="lang-option" data-lang="ar"><img src="https://flagcdn.com/w40/sa.png" class="flag-img"> العربية</button>
+        </div>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ═══ Hero ═══ -->
+  <section class="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="floating-notes">
+      <span class="note">🎵</span>
+      <span class="note">🎶</span>
+      <span class="note">🎵</span>
+      <span class="note">🎶</span>
+      <span class="note">🎵</span>
+      <span class="note">🎶</span>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge"><span class="dot"></span> <span data-i18n="hero_badge">AI-Powered Personalized Audio</span></div>
+      <h1 data-i18n-html="hero_title">Music made<br><span class="gradient">just for you</span></h1>
+      <p data-i18n="hero_desc">Create personalized songs, lullabies, birthday anthems, and motivational audio with AI. Made for the moments that matter most.</p>
+      <div class="cta-row">
+        <a href="https://play.google.com/store" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+          <span data-i18n="hero_cta">Google Play</span>
+        </a>
+        <a href="#features" class="btn-secondary" data-i18n="hero_learn">Learn More ↓</a>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-mouse"></div>
+      <span data-i18n="scroll">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ═══ Stats ═══ -->
+  <section class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat reveal">
+        <div class="stat-num" data-count="8">8</div>
+        <div class="stat-label" data-i18n="stat_lang">Languages</div>
+      </div>
+      <div class="stat reveal reveal-delay-1">
+        <div class="stat-num">25+</div>
+        <div class="stat-label" data-i18n="stat_cat">Audio Categories</div>
+      </div>
+      <div class="stat reveal reveal-delay-2">
+        <div class="stat-num">&lt;2min</div>
+        <div class="stat-label" data-i18n="stat_time">Generation Time</div>
+      </div>
+      <div class="stat reveal reveal-delay-3">
+        <div class="stat-num">AI</div>
+        <div class="stat-label" data-i18n="stat_ai">Advanced AI Technology</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Features ═══ -->
+  <section class="features" id="features">
+    <div class="section-header reveal">
+      <div class="section-label" data-i18n="nav_features">Features</div>
+      <h2 data-i18n="feat_title">Everything you need to create</h2>
+      <p data-i18n="feat_sub">Powerful AI tools that turn your ideas into professional audio content</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap">🎵</div>
+        <h3 data-i18n="feat_songs">AI-Generated Songs</h3>
+        <p data-i18n="feat_songs_d">Professional-quality songs with custom lyrics, melodies, and vocals — created in minutes, not hours.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap">🗣️</div>
+        <h3 data-i18n="feat_tts">Text to Speech</h3>
+        <p data-i18n="feat_tts_d">Turn any text into natural-sounding audio with multiple voice options and emotional tones.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon-wrap">🌍</div>
+        <h3 data-i18n="feat_lang">8 Languages</h3>
+        <p data-i18n="feat_lang_d">Create in Azerbaijani, English, German, Spanish, French, Russian, Turkish, and Arabic.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrap">💝</div>
+        <h3 data-i18n="feat_personal">Truly Personal</h3>
+        <p data-i18n="feat_personal_d">Use real names, dates, and details. Every creation is one-of-a-kind and emotionally meaningful.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrap">📱</div>
+        <h3 data-i18n="feat_share">Share Anywhere</h3>
+        <p data-i18n="feat_share_d">Download and share your creations via WhatsApp, Instagram, or any platform you love.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon-wrap">🔒</div>
+        <h3 data-i18n="feat_secure">Private & Secure</h3>
+        <p data-i18n="feat_secure_d">Your data stays yours. EU-hosted servers with enterprise-grade encryption.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ How It Works ═══ -->
+  <section class="how-it-works" id="how">
+    <div class="steps-container">
+      <div class="section-header reveal">
+        <div class="section-label" data-i18n="nav_how">How It Works</div>
+        <h2 data-i18n="how_title">Three simple steps</h2>
+        <p data-i18n="how_sub">From idea to audio in under two minutes</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal reveal-delay-1">
+          <div class="step-num">1</div>
+          <h3 data-i18n="step1_t">Choose a Category</h3>
+          <p data-i18n="step1_d">Pick from 25+ categories — birthdays, lullabies, sports anthems, motivation, and more.</p>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step-num">2</div>
+          <h3 data-i18n="step2_t">Add Your Details</h3>
+          <p data-i18n="step2_d">Enter names, occasion, mood, and style. Our AI uses every detail to craft something unique.</p>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step-num">3</div>
+          <h3 data-i18n="step3_t">Listen & Share</h3>
+          <p data-i18n="step3_d">Get a professional AI-generated audio ready to play, download, and share with loved ones.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Audio Wave ═══ -->
+  <section class="wave-section">
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div>
+  </section>
+
+  <!-- ═══ Categories ═══ -->
+  <section class="categories" id="categories">
+    <div class="section-header reveal">
+      <div class="section-label" data-i18n="nav_categories">Categories</div>
+      <h2 data-i18n="cat_title">Create for every occasion</h2>
+      <p data-i18n="cat_sub">Whatever the moment, we have the perfect audio category</p>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card reveal reveal-delay-1"><div class="cat-emoji">👶</div><h4 data-i18n="cat_children">Children</h4><p data-i18n="cat_children_d">Lullabies, stories & educational</p></div>
+      <div class="cat-card reveal reveal-delay-2"><div class="cat-emoji">🎂</div><h4 data-i18n="cat_birthday">Birthday</h4><p data-i18n="cat_birthday_d">Personalized birthday songs</p></div>
+      <div class="cat-card reveal reveal-delay-3"><div class="cat-emoji">💒</div><h4 data-i18n="cat_wedding">Wedding</h4><p data-i18n="cat_wedding_d">Wedding & engagement songs</p></div>
+      <div class="cat-card reveal reveal-delay-1"><div class="cat-emoji">💌</div><h4 data-i18n="cat_romantic">Romantic</h4><p data-i18n="cat_romantic_d">Love songs & messages</p></div>
+      <div class="cat-card reveal reveal-delay-2"><div class="cat-emoji">⚽</div><h4 data-i18n="cat_sports">Sports</h4><p data-i18n="cat_sports_d">Team anthems & chants</p></div>
+      <div class="cat-card reveal reveal-delay-3"><div class="cat-emoji">💪</div><h4 data-i18n="cat_motivation">Motivation</h4><p data-i18n="cat_motivation_d">Morning & fitness boost</p></div>
+      <div class="cat-card reveal reveal-delay-1"><div class="cat-emoji">🤲</div><h4 data-i18n="cat_spiritual">Spiritual</h4><p data-i18n="cat_spiritual_d">Prayers & healing audio</p></div>
+      <div class="cat-card reveal reveal-delay-2"><div class="cat-emoji">🎓</div><h4 data-i18n="cat_graduation">Graduation</h4><p data-i18n="cat_graduation_d">Achievement celebrations</p></div>
+      <div class="cat-card reveal reveal-delay-3"><div class="cat-emoji">✨</div><h4 data-i18n="cat_custom">Custom</h4><p data-i18n="cat_custom_d">Describe anything you want</p></div>
+    </div>
+  </section>
+
+  <!-- ═══ Testimonials Marquee ═══ -->
+  <section class="marquee-section">
+    <div class="marquee-track">
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"I created a birthday song for my daughter with her name in it. She cried happy tears!"</p>
+        <div class="testimonial-author">— Sarah K., Berlin</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"The team anthem I made for our football club is now played before every match!"</p>
+        <div class="testimonial-author">— Rashad M., Baku</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"Best wedding gift ever. A personalized love song that made everyone cry."</p>
+        <div class="testimonial-author">— Elena V., Madrid</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"My kids ask for their personalized lullaby every single night. Incredible app!"</p>
+        <div class="testimonial-author">— Anna L., Paris</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"Created a motivation track with my name. I play it every morning before work!"</p>
+        <div class="testimonial-author">— James T., London</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"The graduation song I made for my son was the highlight of the ceremony."</p>
+        <div class="testimonial-author">— Mehmet Y., Istanbul</div>
+      </div>
+      <!-- Duplicate for seamless loop -->
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"I created a birthday song for my daughter with her name in it. She cried happy tears!"</p>
+        <div class="testimonial-author">— Sarah K., Berlin</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"The team anthem I made for our football club is now played before every match!"</p>
+        <div class="testimonial-author">— Rashad M., Baku</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"Best wedding gift ever. A personalized love song that made everyone cry."</p>
+        <div class="testimonial-author">— Elena V., Madrid</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"My kids ask for their personalized lullaby every single night. Incredible app!"</p>
+        <div class="testimonial-author">— Anna L., Paris</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"Created a motivation track with my name. I play it every morning before work!"</p>
+        <div class="testimonial-author">— James T., London</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p>"The graduation song I made for my son was the highlight of the ceremony."</p>
+        <div class="testimonial-author">— Mehmet Y., Istanbul</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Languages ═══ -->
+  <section class="languages">
+    <div class="section-header reveal">
+      <div class="section-label" data-i18n="lang_label">Global</div>
+      <h2 data-i18n="lang_title">Create in your language</h2>
+      <p data-i18n="lang_sub">Create audio content in 8 languages and counting</p>
+    </div>
+    <div class="lang-grid reveal">
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/az.png" class="flag-img"> <span data-i18n="lp_az">Azerbaijani</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/gb.png" class="flag-img"> <span data-i18n="lp_en">English</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/de.png" class="flag-img"> <span data-i18n="lp_de">German</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/es.png" class="flag-img"> <span data-i18n="lp_es">Spanish</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/fr.png" class="flag-img"> <span data-i18n="lp_fr">French</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/ru.png" class="flag-img"> <span data-i18n="lp_ru">Russian</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/tr.png" class="flag-img"> <span data-i18n="lp_tr">Turkish</span></div>
+      <div class="lang-pill"><img src="https://flagcdn.com/w40/sa.png" class="flag-img"> <span data-i18n="lp_ar">Arabic</span></div>
+    </div>
+  </section>
+
+  <!-- ═══ About ═══ -->
+  <section class="about-section" id="about">
+    <div class="section-header reveal">
+      <div class="section-label" data-i18n="nav_about">About Us</div>
+      <h2 data-i18n="about_title">Music made personal</h2>
+    </div>
+    <div class="about-content reveal">
+      <p data-i18n="about_p1">NameTune was born from a simple idea: every person deserves a song that's truly theirs. We combine advanced AI technology with deep musical understanding to create personalized audio experiences — from lullabies with your baby's name to birthday anthems for your best friend.</p>
+      <p data-i18n="about_p2">Our mission is to make the joy of personalized music accessible to everyone, in every language, for every occasion. Whether it's a graduation gift, a motivational track, or a bedtime story, NameTune turns your words into unforgettable audio moments.</p>
+    </div>
+  </section>
+
+  <!-- ═══ Contact ═══ -->
+  <section class="contact-section" id="contact">
+    <div class="section-header reveal">
+      <div class="section-label" data-i18n="nav_contact">Get in Touch</div>
+      <h2 data-i18n="contact_title">Contact us</h2>
+      <p data-i18n="contact_sub">Have questions, feedback, or partnership inquiries? We'd love to hear from you.</p>
+    </div>
+    <div class="contact-grid reveal">
+      <a href="mailto:support@nametune.com" class="contact-card">
+        <div class="contact-icon">✉️</div>
+        <h4 data-i18n="contact_email">Email</h4>
+        <p>support@nametune.com</p>
+      </a>
+      <a href="/privacy.html" target="_blank" class="contact-card">
+        <div class="contact-icon">🔒</div>
+        <h4 data-i18n="contact_privacy">Privacy Policy</h4>
+        <p data-i18n="contact_privacy_d">How we protect your data</p>
+      </a>
+      <a href="/terms.html" target="_blank" class="contact-card">
+        <div class="contact-icon">📄</div>
+        <h4 data-i18n="contact_terms">Terms of Service</h4>
+        <p data-i18n="contact_terms_d">Our terms and conditions</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="cta-section">
+    <div class="cta-content reveal">
+      <h2 data-i18n-html="cta_title">Ready to create something<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">unforgettable</span>?</h2>
+      <p data-i18n="cta_desc">Download NameTune and turn your special moments into personalized audio memories.</p>
+      <a href="https://play.google.com/store" class="btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+        <span data-i18n="cta_btn">Get it on Google Play</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══ Footer ═══ -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="logo">
+          <div class="logo-icon">🎵</div>
+          <span class="logo-text">NameTune</span>
+        </a>
+        <p data-i18n="footer_desc">AI-powered personalized audio for the moments that matter. Songs, lullabies, anthems — made uniquely yours.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_product">Product</h4>
+        <a href="#features" data-i18n="nav_features">Features</a>
+        <a href="#how" data-i18n="nav_how">How It Works</a>
+        <a href="#categories" data-i18n="nav_categories">Categories</a>
+        <a href="https://play.google.com/store" data-i18n="footer_download">Download</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_legal">Legal</h4>
+        <a href="/privacy.html" target="_blank" data-i18n="contact_privacy">Privacy Policy</a>
+        <a href="/terms.html" target="_blank" data-i18n="contact_terms">Terms of Service</a>
+        <a href="mailto:support@nametune.com" data-i18n="footer_contact">Contact Us</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 NameTune. <span data-i18n="footer_rights">All rights reserved.</span></p>
+    </div>
+  </footer>
+
+  <script>
+    // ═══ Translations ═══
+    const T = {
+      en: {
+        nav_home:'Home', nav_features:'Features', nav_how:'How It Works', nav_categories:'Categories',
+        nav_about:'About', nav_contact:'Contact', nav_getapp:'Get the App',
+        hero_badge:'AI-Powered Personalized Audio',
+        hero_title:'Music made<br><span class="gradient">just for you</span>',
+        hero_desc:'Create personalized songs, lullabies, birthday anthems, and motivational audio with AI. Made for the moments that matter most.',
+        hero_cta:'Google Play', hero_learn:'Learn More ↓', scroll:'Scroll',
+        stat_lang:'Languages', stat_cat:'Audio Categories', stat_time:'Generation Time', stat_ai:'Advanced AI Technology',
+        feat_title:'Everything you need to create', feat_sub:'Powerful AI tools that turn your ideas into professional audio content',
+        feat_songs:'AI-Generated Songs', feat_songs_d:'Professional-quality songs with custom lyrics, melodies, and vocals — created in minutes, not hours.',
+        feat_tts:'Text to Speech', feat_tts_d:'Turn any text into natural-sounding audio with multiple voice options and emotional tones.',
+        feat_lang:'8 Languages', feat_lang_d:'Create in Azerbaijani, English, German, Spanish, French, Russian, Turkish, and Arabic.',
+        feat_personal:'Truly Personal', feat_personal_d:'Use real names, dates, and details. Every creation is one-of-a-kind and emotionally meaningful.',
+        feat_share:'Share Anywhere', feat_share_d:'Download and share your creations via WhatsApp, Instagram, or any platform you love.',
+        feat_secure:'Private & Secure', feat_secure_d:'Your data stays yours. EU-hosted servers with enterprise-grade encryption.',
+        how_title:'Three simple steps', how_sub:'From idea to audio in under two minutes',
+        step1_t:'Choose a Category', step1_d:'Pick from 25+ categories — birthdays, lullabies, sports anthems, motivation, and more.',
+        step2_t:'Add Your Details', step2_d:'Enter names, occasion, mood, and style. Our AI uses every detail to craft something unique.',
+        step3_t:'Listen & Share', step3_d:'Get a professional AI-generated audio ready to play, download, and share with loved ones.',
+        cat_title:'Create for every occasion', cat_sub:'Whatever the moment, we have the perfect audio category',
+        cat_children:'Children', cat_children_d:'Lullabies, stories & educational',
+        cat_birthday:'Birthday', cat_birthday_d:'Personalized birthday songs',
+        cat_wedding:'Wedding', cat_wedding_d:'Wedding & engagement songs',
+        cat_romantic:'Romantic', cat_romantic_d:'Love songs & messages',
+        cat_sports:'Sports', cat_sports_d:'Team anthems & chants',
+        cat_motivation:'Motivation', cat_motivation_d:'Morning & fitness boost',
+        cat_spiritual:'Spiritual', cat_spiritual_d:'Prayers & healing audio',
+        cat_graduation:'Graduation', cat_graduation_d:'Achievement celebrations',
+        cat_custom:'Custom', cat_custom_d:'Describe anything you want',
+        lang_label:'Global', lang_title:'Create in your language', lang_sub:'Create audio content in 8 languages and counting',
+        about_title:'Music made personal',
+        about_p1:'NameTune was born from a simple idea: every person deserves a song that\'s truly theirs. We combine advanced AI technology with deep musical understanding to create personalized audio experiences — from lullabies with your baby\'s name to birthday anthems for your best friend.',
+        about_p2:'Our mission is to make the joy of personalized music accessible to everyone, in every language, for every occasion. Whether it\'s a graduation gift, a motivational track, or a bedtime story, NameTune turns your words into unforgettable audio moments.',
+        contact_title:'Contact us', contact_sub:'Have questions, feedback, or partnership inquiries? We\'d love to hear from you.',
+        contact_email:'Email', contact_privacy:'Privacy Policy', contact_privacy_d:'How we protect your data',
+        contact_terms:'Terms of Service', contact_terms_d:'Our terms and conditions',
+        cta_title:'Ready to create something<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">unforgettable</span>?',
+        cta_desc:'Download NameTune and turn your special moments into personalized audio memories.',
+        cta_btn:'Get it on Google Play',
+        footer_desc:'AI-powered personalized audio for the moments that matter. Songs, lullabies, anthems — made uniquely yours.',
+        lp_az:'Azerbaijani', lp_en:'English', lp_de:'German', lp_es:'Spanish', lp_fr:'French', lp_ru:'Russian', lp_tr:'Turkish', lp_ar:'Arabic',
+        footer_product:'Product', footer_legal:'Legal', footer_download:'Download', footer_contact:'Contact Us', footer_rights:'All rights reserved.',
+      },
+      az: {
+        nav_home:'Ana səhifə', nav_features:'Xüsusiyyətlər', nav_how:'Necə işləyir', nav_categories:'Kateqoriyalar',
+        nav_about:'Haqqımızda', nav_contact:'Əlaqə', nav_getapp:'Tətbiqi yüklə',
+        hero_badge:'AI ilə Fərdiləşdirilmiş Audio',
+        hero_title:'Musiqi sənin üçün<br><span class="gradient">xüsusi yaradılıb</span>',
+        hero_desc:'AI ilə fərdi mahnılar, laylalar, ad günü mahnıları və motivasiya audioları yaradın. Ən əziz anlarınız üçün.',
+        hero_cta:'Google Play', hero_learn:'Ətraflı ↓', scroll:'Aşağı',
+        stat_lang:'Dil', stat_cat:'Audio Kateqoriya', stat_time:'Yaradılma Müddəti', stat_ai:'Qabaqcıl AI Texnologiya',
+        feat_title:'Yaratmaq üçün lazım olan hər şey', feat_sub:'İdeyalarınızı peşəkar audio kontentə çevirən güclü AI alətlər',
+        feat_songs:'AI Mahnılar', feat_songs_d:'Xüsusi sözlər, melodiya və vokal ilə peşəkar keyfiyyətli mahnılar — saatlarla yox, dəqiqələrlə.',
+        feat_tts:'Mətn-Səs', feat_tts_d:'İstənilən mətni təbii səsli audioya çevirin — müxtəlif səs variantları və emosional tonlar ilə.',
+        feat_lang:'8 Dil', feat_lang_d:'Azərbaycan, İngilis, Alman, İspan, Fransız, Rus, Türk və Ərəb dillərində yaradın.',
+        feat_personal:'Tam Fərdi', feat_personal_d:'Real adlar, tarixlər və detallar istifadə edin. Hər yaradıcılıq unikal və emosional mənalıdır.',
+        feat_share:'Hər yerdə paylaşın', feat_share_d:'Yaratdıqlarınızı WhatsApp, Instagram və ya istənilən platformada paylaşın.',
+        feat_secure:'Gizli və Təhlükəsiz', feat_secure_d:'Məlumatlarınız sizindir. Aİ səviyyəli şifrələmə ilə AB serverləri.',
+        how_title:'Üç sadə addım', how_sub:'İdeyadan audioya 2 dəqiqədən az vaxtda',
+        step1_t:'Kateqoriya seçin', step1_d:'25+ kateqoriyadan seçin — ad günləri, laylalar, idman, motivasiya və daha çox.',
+        step2_t:'Detalları daxil edin', step2_d:'Ad, münasibət, əhval-ruhiyyə və üslub daxil edin. AI hər detaldan unikal nəticə yaradır.',
+        step3_t:'Dinləyin və paylaşın', step3_d:'Peşəkar AI audio hazırdır — dinləyin, yükləyin və sevdiklərinizlə paylaşın.',
+        cat_title:'Hər münasibət üçün yaradın', cat_sub:'Hansı an olursa olsun, mükəmməl audio kateqoriyamız var',
+        cat_children:'Uşaqlar', cat_children_d:'Laylalar, nağıllar və təhsil',
+        cat_birthday:'Ad günü', cat_birthday_d:'Fərdi ad günü mahnıları',
+        cat_wedding:'Toy', cat_wedding_d:'Toy və nişan mahnıları',
+        cat_romantic:'Romantik', cat_romantic_d:'Sevgi mahnıları və mesajlar',
+        cat_sports:'İdman', cat_sports_d:'Komanda himnləri',
+        cat_motivation:'Motivasiya', cat_motivation_d:'Səhər və fitness enerjisi',
+        cat_spiritual:'Mənəvi', cat_spiritual_d:'Dualar və şəfa audioları',
+        cat_graduation:'Məzuniyyət', cat_graduation_d:'Nailiyyət bayramları',
+        cat_custom:'Xüsusi', cat_custom_d:'İstədiyiniz hər şeyi təsvir edin',
+        lang_label:'Qlobal', lang_title:'Öz dilinizdə yaradın', lang_sub:'8 dildə audio kontent yaradın',
+        about_title:'Fərdi musiqi',
+        about_p1:'NameTune sadə bir ideyadan doğuldu: hər insan özünə aid bir mahnıya layiqdir. Biz qabaqcıl AI texnologiyasını dərin musiqi anlayışı ilə birləşdirib fərdi audio təcrübələr yaradırıq — körpənizin adı ilə layladan dostunuz üçün ad günü himnlərinə qədər.',
+        about_p2:'Missiyamız fərdi musiqinin sevincini hər kəsə, hər dildə, hər münasibət üçün əlçatan etməkdir. İstər məzuniyyət hədiyyəsi, istər motivasiya treki, istərsə də yataq vaxtı nağılı — NameTune sözlərinizi unudulmaz audio anlara çevirir.',
+        contact_title:'Bizimlə əlaqə', contact_sub:'Suallarınız, rəyləriniz və ya əməkdaşlıq təklifləriniz var? Sizinlə əlaqə saxlamağa şadıq.',
+        contact_email:'E-poçt', contact_privacy:'Gizlilik Siyasəti', contact_privacy_d:'Məlumatlarınızı necə qoruyuruq',
+        contact_terms:'İstifadə Şərtləri', contact_terms_d:'Şərtlər və qaydalarımız',
+        cta_title:'Unudulmaz bir şey yaratmağa<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">hazırsınız</span>?',
+        cta_desc:'NameTune-u yükləyin və xüsusi anlarınızı fərdi audio xatirələrə çevirin.',
+        cta_btn:'Google Play-dən yüklə',
+        footer_desc:'Əhəmiyyətli anlar üçün AI ilə fərdiləşdirilmiş audio. Mahnılar, laylalar, himnlər — sizə xüsusi yaradılıb.',
+        lp_az:'Azərbaycan', lp_en:'İngilis', lp_de:'Alman', lp_es:'İspan', lp_fr:'Fransız', lp_ru:'Rus', lp_tr:'Türk', lp_ar:'Ərəb',
+        footer_product:'Məhsul', footer_legal:'Hüquqi', footer_download:'Yüklə', footer_contact:'Əlaqə', footer_rights:'Bütün hüquqlar qorunur.',
+      },
+      tr: {
+        nav_home:'Ana Sayfa', nav_features:'Özellikler', nav_how:'Nasıl Çalışır', nav_categories:'Kategoriler',
+        nav_about:'Hakkımızda', nav_contact:'İletişim', nav_getapp:'Uygulamayı İndir',
+        hero_badge:'AI Destekli Kişiselleştirilmiş Ses',
+        hero_title:'Müzik sadece<br><span class="gradient">senin için</span>',
+        hero_desc:'AI ile kişisel şarkılar, ninniler, doğum günü marşları ve motivasyon sesleri oluşturun. En önemli anlarınız için.',
+        hero_cta:'Google Play', hero_learn:'Daha Fazla ↓', scroll:'Kaydır',
+        stat_lang:'Dil', stat_cat:'Ses Kategorisi', stat_time:'Oluşturma Süresi', stat_ai:'Gelişmiş AI Teknolojisi',
+        feat_title:'Oluşturmak için ihtiyacınız olan her şey', feat_sub:'Fikirlerinizi profesyonel ses içeriğine dönüştüren güçlü AI araçları',
+        feat_songs:'AI Şarkılar', feat_songs_d:'Özel sözler, melodi ve vokallerle profesyonel kalitede şarkılar — saatler değil, dakikalar içinde.',
+        feat_tts:'Metinden Sese', feat_tts_d:'Herhangi bir metni doğal sesli sese dönüştürün — birden fazla ses ve duygu tonu ile.',
+        feat_lang:'8 Dil', feat_lang_d:'Azerbaycan, İngilizce, Almanca, İspanyolca, Fransızca, Rusça, Türkçe ve Arapça dillerinde oluşturun.',
+        feat_personal:'Tamamen Kişisel', feat_personal_d:'Gerçek isimler, tarihler ve detaylar kullanın. Her eser benzersiz ve duygusal olarak anlamlıdır.',
+        feat_share:'Her Yerde Paylaşın', feat_share_d:'Eserlerinizi WhatsApp, Instagram veya sevdiğiniz platformda paylaşın.',
+        feat_secure:'Gizli ve Güvenli', feat_secure_d:'Verileriniz sizin. AB sunucularında kurumsal düzeyde şifreleme.',
+        how_title:'Üç basit adım', how_sub:'Fikirden sese 2 dakikadan kısa sürede',
+        step1_t:'Kategori Seçin', step1_d:'25+ kategoriden seçin — doğum günleri, ninniler, spor marşları, motivasyon ve daha fazlası.',
+        step2_t:'Detayları Girin', step2_d:'İsim, vesile, ruh hali ve stil girin. AI her detayı kullanarak benzersiz bir eser oluşturur.',
+        step3_t:'Dinleyin ve Paylaşın', step3_d:'Profesyonel AI sesi hazır — dinleyin, indirin ve sevdiklerinizle paylaşın.',
+        cat_title:'Her vesile için oluşturun', cat_sub:'Hangi an olursa olsun, mükemmel ses kategorimiz var',
+        cat_children:'Çocuklar', cat_children_d:'Ninniler, hikayeler ve eğitim',
+        cat_birthday:'Doğum Günü', cat_birthday_d:'Kişisel doğum günü şarkıları',
+        cat_wedding:'Düğün', cat_wedding_d:'Düğün ve nişan şarkıları',
+        cat_romantic:'Romantik', cat_romantic_d:'Aşk şarkıları ve mesajlar',
+        cat_sports:'Spor', cat_sports_d:'Takım marşları',
+        cat_motivation:'Motivasyon', cat_motivation_d:'Sabah ve fitness enerjisi',
+        cat_spiritual:'Manevi', cat_spiritual_d:'Dualar ve şifa sesleri',
+        cat_graduation:'Mezuniyet', cat_graduation_d:'Başarı kutlamaları',
+        cat_custom:'Özel', cat_custom_d:'İstediğiniz her şeyi tanımlayın',
+        lang_label:'Küresel', lang_title:'Kendi dilinizde oluşturun', lang_sub:'8 dilde ses içeriği oluşturun',
+        about_title:'Kişisel müzik',
+        about_p1:'NameTune basit bir fikirden doğdu: herkes kendine ait bir şarkıyı hak eder. Gelişmiş AI teknolojisini derin müzik anlayışıyla birleştirerek kişisel ses deneyimleri yaratıyoruz.',
+        about_p2:'Misyonumuz kişisel müziğin sevincini herkese, her dilde, her vesile için erişilebilir kılmaktır. İster mezuniyet hediyesi, ister motivasyon parçası, ister uyku vakti hikayesi — NameTune sözlerinizi unutulmaz ses anlarına dönüştürür.',
+        contact_title:'Bize ulaşın', contact_sub:'Soru, geri bildirim veya iş birliği teklifiniz mi var? Sizden haber almaktan mutluluk duyarız.',
+        contact_email:'E-posta', contact_privacy:'Gizlilik Politikası', contact_privacy_d:'Verilerinizi nasıl koruyoruz',
+        contact_terms:'Kullanım Şartları', contact_terms_d:'Şartlar ve koşullarımız',
+        cta_title:'Unutulmaz bir şey yaratmaya<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">hazır mısınız</span>?',
+        cta_desc:'NameTune\'u indirin ve özel anlarınızı kişisel ses anılarına dönüştürün.',
+        cta_btn:'Google Play\'den İndir',
+        footer_desc:'Önemli anlar için AI destekli kişiselleştirilmiş ses. Şarkılar, ninniler, marşlar — size özel.',
+        lp_az:'Azerbaycanca', lp_en:'İngilizce', lp_de:'Almanca', lp_es:'İspanyolca', lp_fr:'Fransızca', lp_ru:'Rusça', lp_tr:'Türkçe', lp_ar:'Arapça',
+        footer_product:'Ürün', footer_legal:'Yasal', footer_download:'İndir', footer_contact:'Bize Ulaşın', footer_rights:'Tüm hakları saklıdır.',
+      },
+      ru: {
+        nav_home:'Главная', nav_features:'Функции', nav_how:'Как работает', nav_categories:'Категории',
+        nav_about:'О нас', nav_contact:'Контакты', nav_getapp:'Скачать',
+        hero_badge:'Персонализированное аудио на базе ИИ',
+        hero_title:'Музыка создана<br><span class="gradient">специально для вас</span>',
+        hero_desc:'Создавайте персональные песни, колыбельные, праздничные гимны и мотивационные треки с помощью ИИ. Для самых важных моментов.',
+        hero_cta:'Google Play', hero_learn:'Подробнее ↓', scroll:'Листайте',
+        stat_lang:'Языков', stat_cat:'Аудио категорий', stat_time:'Время создания', stat_ai:'Продвинутые ИИ технологии',
+        feat_title:'Всё, что нужно для творчества', feat_sub:'Мощные ИИ-инструменты, превращающие идеи в профессиональный аудиоконтент',
+        feat_songs:'ИИ-песни', feat_songs_d:'Песни профессионального качества с уникальными текстами, мелодиями и вокалом — за минуты, не часы.',
+        feat_tts:'Текст в речь', feat_tts_d:'Превратите любой текст в естественно звучащее аудио с различными голосами и эмоциональными тонами.',
+        feat_lang:'8 языков', feat_lang_d:'Создавайте на азербайджанском, английском, немецком, испанском, французском, русском, турецком и арабском.',
+        feat_personal:'По-настоящему личное', feat_personal_d:'Используйте настоящие имена, даты и детали. Каждое произведение уникально и эмоционально значимо.',
+        feat_share:'Делитесь везде', feat_share_d:'Скачивайте и делитесь в WhatsApp, Instagram или на любой платформе.',
+        feat_secure:'Конфиденциально', feat_secure_d:'Ваши данные — только ваши. Серверы в ЕС с шифрованием корпоративного уровня.',
+        how_title:'Три простых шага', how_sub:'От идеи до аудио менее чем за две минуты',
+        step1_t:'Выберите категорию', step1_d:'Выбирайте из 25+ категорий — дни рождения, колыбельные, спортивные гимны, мотивация и многое другое.',
+        step2_t:'Добавьте детали', step2_d:'Введите имена, повод, настроение и стиль. ИИ использует каждую деталь для создания уникального произведения.',
+        step3_t:'Слушайте и делитесь', step3_d:'Профессиональное ИИ-аудио готово — слушайте, скачивайте и делитесь с близкими.',
+        cat_title:'Создавайте для любого случая', cat_sub:'Какой бы ни был момент, у нас есть идеальная категория',
+        cat_children:'Детские', cat_children_d:'Колыбельные, сказки и обучение',
+        cat_birthday:'День рождения', cat_birthday_d:'Персональные песни на день рождения',
+        cat_wedding:'Свадьба', cat_wedding_d:'Свадебные и помолвочные песни',
+        cat_romantic:'Романтика', cat_romantic_d:'Песни о любви и послания',
+        cat_sports:'Спорт', cat_sports_d:'Командные гимны',
+        cat_motivation:'Мотивация', cat_motivation_d:'Утренний и фитнес заряд',
+        cat_spiritual:'Духовное', cat_spiritual_d:'Молитвы и исцеляющее аудио',
+        cat_graduation:'Выпускной', cat_graduation_d:'Празднование достижений',
+        cat_custom:'Своё', cat_custom_d:'Опишите что угодно',
+        lang_label:'Глобально', lang_title:'Создавайте на своём языке', lang_sub:'Создавайте аудиоконтент на 8 языках',
+        about_title:'Личная музыка',
+        about_p1:'NameTune родился из простой идеи: каждый человек заслуживает песню, которая по-настоящему его. Мы объединяем передовые ИИ-технологии с глубоким музыкальным пониманием для создания персонализированных аудио-впечатлений.',
+        about_p2:'Наша миссия — сделать радость персональной музыки доступной каждому, на каждом языке, для каждого случая. Будь то подарок на выпускной, мотивационный трек или сказка на ночь — NameTune превращает ваши слова в незабываемые аудио-моменты.',
+        contact_title:'Свяжитесь с нами', contact_sub:'Есть вопросы, отзывы или предложения о сотрудничестве? Мы будем рады услышать вас.',
+        contact_email:'Email', contact_privacy:'Политика конфиденциальности', contact_privacy_d:'Как мы защищаем ваши данные',
+        contact_terms:'Условия использования', contact_terms_d:'Наши условия и положения',
+        cta_title:'Готовы создать что-то<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">незабываемое</span>?',
+        cta_desc:'Скачайте NameTune и превратите особенные моменты в персональные аудио-воспоминания.',
+        cta_btn:'Скачать в Google Play',
+        footer_desc:'Персонализированное аудио на базе ИИ для важных моментов. Песни, колыбельные, гимны — уникально ваши.',
+        lp_az:'Азербайджанский', lp_en:'Английский', lp_de:'Немецкий', lp_es:'Испанский', lp_fr:'Французский', lp_ru:'Русский', lp_tr:'Турецкий', lp_ar:'Арабский',
+        footer_product:'Продукт', footer_legal:'Правовая информация', footer_download:'Скачать', footer_contact:'Связаться', footer_rights:'Все права защищены.',
+      },
+      de: {
+        nav_home:'Startseite', nav_features:'Funktionen', nav_how:'So funktioniert\'s', nav_categories:'Kategorien',
+        nav_about:'Über uns', nav_contact:'Kontakt', nav_getapp:'App holen',
+        hero_badge:'KI-gestützte personalisierte Audio',
+        hero_title:'Musik gemacht<br><span class="gradient">nur für dich</span>',
+        hero_desc:'Erstellen Sie personalisierte Lieder, Schlaflieder, Geburtstagshymnen und Motivationsaudio mit KI. Für die Momente, die am meisten zählen.',
+        hero_cta:'Google Play', hero_learn:'Mehr erfahren ↓', scroll:'Scrollen',
+        stat_lang:'Sprachen', stat_cat:'Audio-Kategorien', stat_time:'Erstellungszeit', stat_ai:'Fortschrittliche KI-Technologie',
+        feat_title:'Alles was Sie zum Erstellen brauchen', feat_sub:'Leistungsstarke KI-Tools, die Ihre Ideen in professionelle Audioinhalte verwandeln',
+        feat_songs:'KI-generierte Lieder', feat_songs_d:'Professionelle Lieder mit eigenen Texten, Melodien und Gesang — in Minuten, nicht Stunden.',
+        feat_tts:'Text zu Sprache', feat_tts_d:'Verwandeln Sie jeden Text in natürlich klingendes Audio mit verschiedenen Stimmen und emotionalen Tönen.',
+        feat_lang:'8 Sprachen', feat_lang_d:'Erstellen Sie in Aserbaidschanisch, Englisch, Deutsch, Spanisch, Französisch, Russisch, Türkisch und Arabisch.',
+        feat_personal:'Wirklich persönlich', feat_personal_d:'Verwenden Sie echte Namen, Daten und Details. Jede Kreation ist einzigartig und emotional bedeutsam.',
+        feat_share:'Überall teilen', feat_share_d:'Laden Sie herunter und teilen Sie über WhatsApp, Instagram oder jede Plattform.',
+        feat_secure:'Privat & Sicher', feat_secure_d:'Ihre Daten gehören Ihnen. EU-Server mit Verschlüsselung auf Unternehmensniveau.',
+        how_title:'Drei einfache Schritte', how_sub:'Von der Idee zum Audio in unter zwei Minuten',
+        step1_t:'Kategorie wählen', step1_d:'Wählen Sie aus 25+ Kategorien — Geburtstage, Schlaflieder, Sporthymnen, Motivation und mehr.',
+        step2_t:'Details eingeben', step2_d:'Geben Sie Namen, Anlass, Stimmung und Stil ein. Unsere KI nutzt jedes Detail für ein einzigartiges Ergebnis.',
+        step3_t:'Anhören & Teilen', step3_d:'Professionelles KI-Audio fertig — anhören, herunterladen und mit Liebsten teilen.',
+        cat_title:'Für jeden Anlass erstellen', cat_sub:'Welcher Moment auch immer, wir haben die perfekte Kategorie',
+        cat_children:'Kinder', cat_children_d:'Schlaflieder, Geschichten & Bildung',
+        cat_birthday:'Geburtstag', cat_birthday_d:'Personalisierte Geburtstagslieder',
+        cat_wedding:'Hochzeit', cat_wedding_d:'Hochzeits- und Verlobungslieder',
+        cat_romantic:'Romantik', cat_romantic_d:'Liebeslieder und Nachrichten',
+        cat_sports:'Sport', cat_sports_d:'Teamhymnen',
+        cat_motivation:'Motivation', cat_motivation_d:'Morgen- und Fitness-Energie',
+        cat_spiritual:'Spirituell', cat_spiritual_d:'Gebete und heilende Audio',
+        cat_graduation:'Abschluss', cat_graduation_d:'Leistungsfeiern',
+        cat_custom:'Individuell', cat_custom_d:'Beschreiben Sie was Sie möchten',
+        lang_label:'Global', lang_title:'In Ihrer Sprache erstellen', lang_sub:'Audioinhalte in 8 Sprachen erstellen',
+        about_title:'Persönliche Musik',
+        about_p1:'NameTune entstand aus einer einfachen Idee: Jeder Mensch verdient ein Lied, das wirklich seines ist. Wir kombinieren fortschrittliche KI-Technologie mit tiefem musikalischen Verständnis für personalisierte Audio-Erlebnisse.',
+        about_p2:'Unsere Mission ist es, die Freude personalisierter Musik für jeden zugänglich zu machen, in jeder Sprache, für jeden Anlass. Ob Abschlussgeschenk, Motivationstrack oder Gute-Nacht-Geschichte — NameTune verwandelt Ihre Worte in unvergessliche Audio-Momente.',
+        contact_title:'Kontaktieren Sie uns', contact_sub:'Haben Sie Fragen, Feedback oder Partnerschaftsanfragen? Wir freuen uns von Ihnen zu hören.',
+        contact_email:'E-Mail', contact_privacy:'Datenschutz', contact_privacy_d:'Wie wir Ihre Daten schützen',
+        contact_terms:'Nutzungsbedingungen', contact_terms_d:'Unsere Bedingungen',
+        cta_title:'Bereit etwas<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Unvergessliches</span> zu schaffen?',
+        cta_desc:'Laden Sie NameTune herunter und verwandeln Sie besondere Momente in personalisierte Audio-Erinnerungen.',
+        cta_btn:'Bei Google Play holen',
+        footer_desc:'KI-gestützte personalisierte Audio für die Momente, die zählen. Lieder, Schlaflieder, Hymnen — einzigartig Ihres.',
+        lp_az:'Aserbaidschanisch', lp_en:'Englisch', lp_de:'Deutsch', lp_es:'Spanisch', lp_fr:'Französisch', lp_ru:'Russisch', lp_tr:'Türkisch', lp_ar:'Arabisch',
+        footer_product:'Produkt', footer_legal:'Rechtliches', footer_download:'Herunterladen', footer_contact:'Kontakt', footer_rights:'Alle Rechte vorbehalten.',
+      },
+      es: {
+        nav_home:'Inicio', nav_features:'Funciones', nav_how:'Cómo funciona', nav_categories:'Categorías',
+        nav_about:'Acerca de', nav_contact:'Contacto', nav_getapp:'Descargar App',
+        hero_badge:'Audio Personalizado con IA',
+        hero_title:'Música hecha<br><span class="gradient">solo para ti</span>',
+        hero_desc:'Crea canciones personalizadas, nanas, himnos de cumpleaños y audio motivacional con IA. Para los momentos que más importan.',
+        hero_cta:'Google Play', hero_learn:'Saber más ↓', scroll:'Desplazar',
+        stat_lang:'Idiomas', stat_cat:'Categorías de Audio', stat_time:'Tiempo de Creación', stat_ai:'Tecnología IA Avanzada',
+        feat_title:'Todo lo que necesitas para crear', feat_sub:'Potentes herramientas de IA que convierten tus ideas en contenido de audio profesional',
+        feat_songs:'Canciones con IA', feat_songs_d:'Canciones de calidad profesional con letras, melodías y voces personalizadas — en minutos, no horas.',
+        feat_tts:'Texto a Voz', feat_tts_d:'Convierte cualquier texto en audio de sonido natural con múltiples opciones de voz y tonos emocionales.',
+        feat_lang:'8 Idiomas', feat_lang_d:'Crea en azerbaiyano, inglés, alemán, español, francés, ruso, turco y árabe.',
+        feat_personal:'Verdaderamente Personal', feat_personal_d:'Usa nombres reales, fechas y detalles. Cada creación es única y emocionalmente significativa.',
+        feat_share:'Comparte en cualquier lugar', feat_share_d:'Descarga y comparte tus creaciones por WhatsApp, Instagram o cualquier plataforma.',
+        feat_secure:'Privado y Seguro', feat_secure_d:'Tus datos son tuyos. Servidores en la UE con encriptación de nivel empresarial.',
+        how_title:'Tres simples pasos', how_sub:'De idea a audio en menos de dos minutos',
+        step1_t:'Elige una Categoría', step1_d:'Elige entre 25+ categorías — cumpleaños, nanas, himnos deportivos, motivación y más.',
+        step2_t:'Agrega tus Detalles', step2_d:'Ingresa nombres, ocasión, estado de ánimo y estilo. Nuestra IA usa cada detalle para crear algo único.',
+        step3_t:'Escucha y Comparte', step3_d:'Audio profesional con IA listo para reproducir, descargar y compartir con tus seres queridos.',
+        cat_title:'Crea para cada ocasión', cat_sub:'Sea cual sea el momento, tenemos la categoría de audio perfecta',
+        cat_children:'Niños', cat_children_d:'Nanas, cuentos y educación',
+        cat_birthday:'Cumpleaños', cat_birthday_d:'Canciones de cumpleaños personalizadas',
+        cat_wedding:'Boda', cat_wedding_d:'Canciones de boda y compromiso',
+        cat_romantic:'Romántico', cat_romantic_d:'Canciones de amor y mensajes',
+        cat_sports:'Deportes', cat_sports_d:'Himnos de equipo',
+        cat_motivation:'Motivación', cat_motivation_d:'Energía matutina y fitness',
+        cat_spiritual:'Espiritual', cat_spiritual_d:'Oraciones y audio sanador',
+        cat_graduation:'Graduación', cat_graduation_d:'Celebración de logros',
+        cat_custom:'Personalizado', cat_custom_d:'Describe lo que quieras',
+        lang_label:'Global', lang_title:'Crea en tu idioma', lang_sub:'Crea contenido de audio en 8 idiomas',
+        about_title:'Música personal',
+        about_p1:'NameTune nació de una idea simple: cada persona merece una canción que sea verdaderamente suya. Combinamos tecnología de IA avanzada con profunda comprensión musical para crear experiencias de audio personalizadas.',
+        about_p2:'Nuestra misión es hacer que la alegría de la música personalizada sea accesible para todos, en cada idioma, para cada ocasión. Ya sea un regalo de graduación, una pista motivacional o un cuento para dormir — NameTune convierte tus palabras en momentos de audio inolvidables.',
+        contact_title:'Contáctanos', contact_sub:'¿Tienes preguntas, comentarios o consultas de colaboración? Nos encantaría saber de ti.',
+        contact_email:'Correo', contact_privacy:'Política de Privacidad', contact_privacy_d:'Cómo protegemos tus datos',
+        contact_terms:'Términos de Servicio', contact_terms_d:'Nuestros términos y condiciones',
+        cta_title:'¿Listo para crear algo<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">inolvidable</span>?',
+        cta_desc:'Descarga NameTune y convierte tus momentos especiales en recuerdos de audio personalizados.',
+        cta_btn:'Descargar en Google Play',
+        footer_desc:'Audio personalizado con IA para los momentos que importan. Canciones, nanas, himnos — únicamente tuyos.',
+        lp_az:'Azerbaiyano', lp_en:'Inglés', lp_de:'Alemán', lp_es:'Español', lp_fr:'Francés', lp_ru:'Ruso', lp_tr:'Turco', lp_ar:'Árabe',
+        footer_product:'Producto', footer_legal:'Legal', footer_download:'Descargar', footer_contact:'Contacto', footer_rights:'Todos los derechos reservados.',
+      },
+      fr: {
+        nav_home:'Accueil', nav_features:'Fonctionnalités', nav_how:'Comment ça marche', nav_categories:'Catégories',
+        nav_about:'À propos', nav_contact:'Contact', nav_getapp:'Télécharger',
+        hero_badge:'Audio Personnalisé par IA',
+        hero_title:'La musique créée<br><span class="gradient">rien que pour vous</span>',
+        hero_desc:'Créez des chansons personnalisées, berceuses, hymnes d\'anniversaire et audio motivant avec l\'IA. Pour les moments qui comptent le plus.',
+        hero_cta:'Google Play', hero_learn:'En savoir plus ↓', scroll:'Défiler',
+        stat_lang:'Langues', stat_cat:'Catégories Audio', stat_time:'Temps de Création', stat_ai:'Technologie IA Avancée',
+        feat_title:'Tout ce dont vous avez besoin', feat_sub:'Des outils IA puissants qui transforment vos idées en contenu audio professionnel',
+        feat_songs:'Chansons IA', feat_songs_d:'Chansons de qualité professionnelle avec paroles, mélodies et voix — en minutes, pas en heures.',
+        feat_tts:'Texte en Parole', feat_tts_d:'Transformez n\'importe quel texte en audio naturel avec plusieurs options de voix et tons émotionnels.',
+        feat_lang:'8 Langues', feat_lang_d:'Créez en azerbaïdjanais, anglais, allemand, espagnol, français, russe, turc et arabe.',
+        feat_personal:'Vraiment Personnel', feat_personal_d:'Utilisez de vrais noms, dates et détails. Chaque création est unique et émotionnellement significative.',
+        feat_share:'Partagez Partout', feat_share_d:'Téléchargez et partagez vos créations via WhatsApp, Instagram ou toute plateforme.',
+        feat_secure:'Privé et Sécurisé', feat_secure_d:'Vos données vous appartiennent. Serveurs UE avec chiffrement de niveau entreprise.',
+        how_title:'Trois étapes simples', how_sub:'De l\'idée à l\'audio en moins de deux minutes',
+        step1_t:'Choisissez une Catégorie', step1_d:'Choisissez parmi 25+ catégories — anniversaires, berceuses, hymnes sportifs, motivation et plus.',
+        step2_t:'Ajoutez vos Détails', step2_d:'Entrez noms, occasion, humeur et style. Notre IA utilise chaque détail pour créer quelque chose d\'unique.',
+        step3_t:'Écoutez et Partagez', step3_d:'Audio IA professionnel prêt à écouter, télécharger et partager avec vos proches.',
+        cat_title:'Créez pour chaque occasion', cat_sub:'Quel que soit le moment, nous avons la catégorie parfaite',
+        cat_children:'Enfants', cat_children_d:'Berceuses, histoires et éducation',
+        cat_birthday:'Anniversaire', cat_birthday_d:'Chansons d\'anniversaire personnalisées',
+        cat_wedding:'Mariage', cat_wedding_d:'Chansons de mariage et fiançailles',
+        cat_romantic:'Romantique', cat_romantic_d:'Chansons d\'amour et messages',
+        cat_sports:'Sport', cat_sports_d:'Hymnes d\'équipe',
+        cat_motivation:'Motivation', cat_motivation_d:'Énergie matinale et fitness',
+        cat_spiritual:'Spirituel', cat_spiritual_d:'Prières et audio guérisseur',
+        cat_graduation:'Diplôme', cat_graduation_d:'Célébrations de réussite',
+        cat_custom:'Sur Mesure', cat_custom_d:'Décrivez ce que vous voulez',
+        lang_label:'Mondial', lang_title:'Créez dans votre langue', lang_sub:'Créez du contenu audio en 8 langues',
+        about_title:'Musique personnelle',
+        about_p1:'NameTune est né d\'une idée simple : chaque personne mérite une chanson qui est vraiment la sienne. Nous combinons la technologie IA avancée avec une compréhension musicale profonde pour créer des expériences audio personnalisées.',
+        about_p2:'Notre mission est de rendre la joie de la musique personnalisée accessible à tous, dans chaque langue, pour chaque occasion. Qu\'il s\'agisse d\'un cadeau de diplôme, d\'un morceau de motivation ou d\'une histoire du soir — NameTune transforme vos mots en moments audio inoubliables.',
+        contact_title:'Contactez-nous', contact_sub:'Des questions, des retours ou des demandes de partenariat ? Nous serions ravis de vous entendre.',
+        contact_email:'Email', contact_privacy:'Politique de Confidentialité', contact_privacy_d:'Comment nous protégeons vos données',
+        contact_terms:'Conditions d\'Utilisation', contact_terms_d:'Nos termes et conditions',
+        cta_title:'Prêt à créer quelque chose<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">d\'inoubliable</span> ?',
+        cta_desc:'Téléchargez NameTune et transformez vos moments spéciaux en souvenirs audio personnalisés.',
+        cta_btn:'Télécharger sur Google Play',
+        footer_desc:'Audio personnalisé par IA pour les moments qui comptent. Chansons, berceuses, hymnes — uniquement les vôtres.',
+        lp_az:'Azerbaïdjanais', lp_en:'Anglais', lp_de:'Allemand', lp_es:'Espagnol', lp_fr:'Français', lp_ru:'Russe', lp_tr:'Turc', lp_ar:'Arabe',
+        footer_product:'Produit', footer_legal:'Mentions légales', footer_download:'Télécharger', footer_contact:'Contact', footer_rights:'Tous droits réservés.',
+      },
+      ar: {
+        nav_home:'الرئيسية', nav_features:'المميزات', nav_how:'كيف يعمل', nav_categories:'الفئات',
+        nav_about:'عن التطبيق', nav_contact:'اتصل بنا', nav_getapp:'حمّل التطبيق',
+        hero_badge:'صوت مخصص بالذكاء الاصطناعي',
+        hero_title:'موسيقى صُنعت<br><span class="gradient">خصيصاً لك</span>',
+        hero_desc:'أنشئ أغانٍ مخصصة وتهويدات وأناشيد عيد ميلاد وصوتيات تحفيزية بالذكاء الاصطناعي. لأهم لحظاتك.',
+        hero_cta:'Google Play', hero_learn:'اعرف المزيد ↓', scroll:'مرر',
+        stat_lang:'لغات', stat_cat:'فئات صوتية', stat_time:'وقت الإنشاء', stat_ai:'تقنية ذكاء اصطناعي متقدمة',
+        feat_title:'كل ما تحتاجه للإبداع', feat_sub:'أدوات ذكاء اصطناعي قوية تحول أفكارك إلى محتوى صوتي احترافي',
+        feat_songs:'أغاني بالذكاء الاصطناعي', feat_songs_d:'أغانٍ بجودة احترافية مع كلمات وألحان وأصوات مخصصة — في دقائق وليس ساعات.',
+        feat_tts:'تحويل النص إلى كلام', feat_tts_d:'حوّل أي نص إلى صوت طبيعي مع خيارات صوتية متعددة ونغمات عاطفية.',
+        feat_lang:'8 لغات', feat_lang_d:'أنشئ بالأذربيجانية والإنجليزية والألمانية والإسبانية والفرنسية والروسية والتركية والعربية.',
+        feat_personal:'شخصي حقاً', feat_personal_d:'استخدم أسماء وتواريخ وتفاصيل حقيقية. كل إبداع فريد وذو معنى عاطفي.',
+        feat_share:'شارك في أي مكان', feat_share_d:'حمّل وشارك إبداعاتك عبر واتساب وإنستغرام أو أي منصة تحبها.',
+        feat_secure:'خاص وآمن', feat_secure_d:'بياناتك ملكك. خوادم في الاتحاد الأوروبي مع تشفير بمستوى المؤسسات.',
+        how_title:'ثلاث خطوات بسيطة', how_sub:'من الفكرة إلى الصوت في أقل من دقيقتين',
+        step1_t:'اختر فئة', step1_d:'اختر من 25+ فئة — أعياد ميلاد، تهويدات، أناشيد رياضية، تحفيز والمزيد.',
+        step2_t:'أضف تفاصيلك', step2_d:'أدخل الأسماء والمناسبة والمزاج والأسلوب. ذكاءنا الاصطناعي يستخدم كل تفصيل لصنع شيء فريد.',
+        step3_t:'استمع وشارك', step3_d:'صوت احترافي بالذكاء الاصطناعي جاهز للتشغيل والتحميل والمشاركة مع أحبائك.',
+        cat_title:'أنشئ لكل مناسبة', cat_sub:'مهما كانت اللحظة، لدينا الفئة الصوتية المثالية',
+        cat_children:'أطفال', cat_children_d:'تهويدات وقصص وتعليم',
+        cat_birthday:'عيد ميلاد', cat_birthday_d:'أغاني عيد ميلاد مخصصة',
+        cat_wedding:'زفاف', cat_wedding_d:'أغاني زفاف وخطوبة',
+        cat_romantic:'رومانسي', cat_romantic_d:'أغاني حب ورسائل',
+        cat_sports:'رياضة', cat_sports_d:'أناشيد الفريق',
+        cat_motivation:'تحفيز', cat_motivation_d:'طاقة صباحية ولياقة',
+        cat_spiritual:'روحاني', cat_spiritual_d:'أدعية وصوتيات شفائية',
+        cat_graduation:'تخرج', cat_graduation_d:'احتفالات الإنجاز',
+        cat_custom:'مخصص', cat_custom_d:'صف أي شيء تريده',
+        lang_label:'عالمي', lang_title:'أنشئ بلغتك', lang_sub:'أنشئ محتوى صوتي بـ 8 لغات',
+        about_title:'موسيقى شخصية',
+        about_p1:'وُلد NameTune من فكرة بسيطة: كل شخص يستحق أغنية خاصة به حقاً. نجمع بين تقنية الذكاء الاصطناعي المتقدمة والفهم الموسيقي العميق لإنشاء تجارب صوتية مخصصة.',
+        about_p2:'مهمتنا هي جعل فرحة الموسيقى المخصصة في متناول الجميع، بكل لغة، لكل مناسبة. سواء كانت هدية تخرج أو مقطع تحفيزي أو قصة قبل النوم — NameTune يحول كلماتك إلى لحظات صوتية لا تُنسى.',
+        contact_title:'تواصل معنا', contact_sub:'لديك أسئلة أو ملاحظات أو استفسارات شراكة؟ يسعدنا أن نسمع منك.',
+        contact_email:'البريد الإلكتروني', contact_privacy:'سياسة الخصوصية', contact_privacy_d:'كيف نحمي بياناتك',
+        contact_terms:'شروط الخدمة', contact_terms_d:'الشروط والأحكام',
+        cta_title:'مستعد لإنشاء شيء<br><span class="gradient" style="background:linear-gradient(135deg,var(--primary-light),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">لا يُنسى</span>؟',
+        cta_desc:'حمّل NameTune وحوّل لحظاتك المميزة إلى ذكريات صوتية مخصصة.',
+        cta_btn:'حمّل من Google Play',
+        footer_desc:'صوت مخصص بالذكاء الاصطناعي للحظات المهمة. أغانٍ وتهويدات وأناشيد — صُنعت خصيصاً لك.',
+        lp_az:'الأذربيجانية', lp_en:'الإنجليزية', lp_de:'الألمانية', lp_es:'الإسبانية', lp_fr:'الفرنسية', lp_ru:'الروسية', lp_tr:'التركية', lp_ar:'العربية',
+        footer_product:'المنتج', footer_legal:'قانوني', footer_download:'تحميل', footer_contact:'اتصل بنا', footer_rights:'جميع الحقوق محفوظة.',
+      },
+    };
+
+    const FLAGS = { en:'gb', az:'az', tr:'tr', ru:'ru', de:'de', es:'es', fr:'fr', ar:'sa' };
+
+    function applyLang(lang) {
+      const dict = T[lang] || T.en;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+      document.getElementById('langFlag').src = 'https://flagcdn.com/w40/' + (FLAGS[lang] || 'gb') + '.png';
+      document.querySelectorAll('.lang-option').forEach(o => {
+        o.classList.toggle('active', o.dataset.lang === lang);
+      });
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      localStorage.setItem('nt_lang', lang);
+    }
+
+    // Language dropdown
+    const langBtn = document.getElementById('langBtn');
+    const langDrop = document.getElementById('langDropdown');
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langBtn.classList.toggle('open');
+      langDrop.classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+      langBtn.classList.remove('open');
+      langDrop.classList.remove('show');
+    });
+    document.querySelectorAll('.lang-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        applyLang(opt.dataset.lang);
+        langBtn.classList.remove('open');
+        langDrop.classList.remove('show');
+      });
+    });
+
+    // Init language
+    const savedLang = localStorage.getItem('nt_lang') || (navigator.language || '').slice(0,2);
+    applyLang(T[savedLang] ? savedLang : 'en');
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Cursor glow
+    const glow = document.getElementById('cursorGlow');
+    if (window.matchMedia('(pointer: fine)').matches) {
+      document.addEventListener('mousemove', (e) => {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      });
+    }
+
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    const overlay = document.getElementById('mobileOverlay');
+    const navbar = document.getElementById('navbar');
+    function toggleMenu() {
+      const opening = !navLinks.classList.contains('open');
+      if (opening) {
+        document.body.appendChild(navLinks);
+      } else {
+        navbar.insertBefore(navLinks, hamburger);
+      }
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+      overlay.classList.toggle('show');
+      document.body.style.overflow = opening ? 'hidden' : '';
+    }
+    function closeMenu() {
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+      navbar.insertBefore(navLinks, hamburger);
+    }
+    hamburger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
+    document.getElementById('menuClose').addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a:not(.lang-btn)').forEach(a => {
+      a.addEventListener('click', closeMenu);
+    });
+
+    // Logo click → reload
+    document.querySelectorAll('a.logo').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+        location.reload();
+      });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+
+</body>
+</html>
